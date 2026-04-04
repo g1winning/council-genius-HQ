@@ -1,0 +1,1479 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="CouncilGenius — Australia's only purpose-built AI resident assistant for local government. Residents get instant, accurate answers. Staff get time back.">
+  <title>CouncilGenius — AI Resident Assistant for Australian Local Government</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --navy:#1A3A6B;--navy-dark:#0f2347;--navy-light:#2a5298;
+      --gold:#C9A227;--gold-light:#E8C96A;--gold-pale:#fdf6e3;
+      --white:#FFFFFF;--black:#0a0806;
+      --grey-50:#f8f9fa;--grey-100:#f1f3f5;--grey-200:#e9ecef;
+      --grey-400:#adb5bd;--grey-600:#6c757d;--grey-800:#343a40;
+      --error:#c0392b;
+      --radius-sm:6px;--radius-md:12px;--radius-lg:20px;--radius-xl:32px;
+      --shadow-sm:0 1px 4px rgba(0,0,0,0.08);
+      --shadow-md:0 4px 16px rgba(0,0,0,0.10);
+      --shadow-lg:0 8px 32px rgba(0,0,0,0.12);
+      --t:200ms ease;--max-w:1200px;
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    html{scroll-behavior:smooth;font-size:16px}
+    body{font-family:'Inter',system-ui,-apple-system,sans-serif;color:var(--grey-800);background:var(--white);line-height:1.6;-webkit-font-smoothing:antialiased}
+    img{max-width:100%;display:block}
+    a{color:inherit;text-decoration:none}
+    button{cursor:pointer;font-family:inherit}
+    .skip-link{position:absolute;top:-999px;left:0;z-index:9999;background:var(--gold);color:var(--black);padding:8px 16px;font-weight:600}
+    .skip-link:focus{top:0}
+    .container{max-width:var(--max-w);margin:0 auto;padding:0 24px}
+    .section{padding:96px 0}
+    .section--alt{background:var(--grey-50)}
+    .section--navy{background:var(--navy);color:var(--white)}
+    .section--dark{background:var(--navy-dark);color:var(--white)}
+    .section-label{display:inline-block;font-size:11px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:var(--gold);margin-bottom:12px}
+    .section-label--light{color:var(--gold-light)}
+    h1,h2,h3,h4{line-height:1.2;font-weight:700;color:var(--navy)}
+    .section--navy h2,.section--navy h3,.section--dark h2,.section--dark h3{color:var(--white)}
+    h1{font-size:clamp(2rem,4.5vw,3.4rem);font-weight:800}
+    h2{font-size:clamp(1.7rem,3.5vw,2.5rem)}
+    h3{font-size:1.2rem}
+    p{line-height:1.75;color:var(--grey-600)}
+    .section--navy p,.section--dark p{color:rgba(255,255,255,0.82)}
+    .text-centre{text-align:center}
+    .lead{font-size:1.1rem;line-height:1.8;color:var(--grey-600);max-width:680px}
+    .lead--light{color:rgba(255,255,255,0.82)}
+
+    /* Buttons */
+    .btn{display:inline-flex;align-items:center;gap:8px;padding:14px 28px;border-radius:var(--radius-sm);font-size:.95rem;font-weight:600;border:2px solid transparent;transition:background var(--t),color var(--t),border-color var(--t),box-shadow var(--t),transform var(--t);min-height:48px;white-space:nowrap;cursor:pointer}
+    .btn:focus-visible{outline:3px solid var(--gold);outline-offset:3px}
+    .btn:active{transform:scale(0.97)}
+    .btn-primary{background:var(--gold);color:var(--black);border-color:var(--gold)}
+    .btn-primary:hover{background:#b8911f;border-color:#b8911f;box-shadow:0 4px 16px rgba(201,162,39,.35)}
+    .btn-outline-white{background:transparent;color:var(--white);border-color:rgba(255,255,255,.45)}
+    .btn-outline-white:hover{background:rgba(255,255,255,.1);border-color:var(--white)}
+    .btn-outline-navy{background:transparent;color:var(--navy);border-color:var(--navy)}
+    .btn-outline-navy:hover{background:var(--navy);color:var(--white)}
+    .btn-sm{padding:10px 20px;font-size:.875rem;min-height:40px}
+
+    /* Nav */
+    #navbar{position:fixed;top:0;left:0;right:0;z-index:1000;background:rgba(255,255,255,.97);backdrop-filter:blur(12px);border-bottom:1px solid var(--grey-200);transition:box-shadow var(--t)}
+    #navbar.scrolled{box-shadow:var(--shadow-md)}
+    .nav-inner{display:flex;align-items:center;justify-content:space-between;height:72px;gap:24px}
+    .nav-logo{display:flex;align-items:center;gap:12px;flex-shrink:0}
+    .nav-logo img{width:38px;height:38px;border-radius:7px}
+    .nav-logo-text{font-size:1.05rem;font-weight:700;color:var(--navy);letter-spacing:-.02em}
+    .nav-links{display:flex;align-items:center;gap:2px;list-style:none}
+    .nav-links a{padding:8px 12px;border-radius:var(--radius-sm);font-size:.88rem;font-weight:500;color:var(--grey-800);transition:background var(--t),color var(--t);display:block}
+    .nav-links a:hover,.nav-links a.active{background:var(--grey-100);color:var(--navy)}
+    .nav-links a:focus-visible{outline:2px solid var(--navy);outline-offset:2px}
+    .nav-toggle{display:none;flex-direction:column;gap:5px;background:none;border:none;padding:8px;border-radius:var(--radius-sm);min-width:44px;min-height:44px;align-items:center;justify-content:center}
+    .nav-toggle span{display:block;width:22px;height:2px;background:var(--navy);border-radius:2px;transition:transform var(--t),opacity var(--t)}
+    .nav-toggle[aria-expanded="true"] span:nth-child(1){transform:translateY(7px) rotate(45deg)}
+    .nav-toggle[aria-expanded="true"] span:nth-child(2){opacity:0}
+    .nav-toggle[aria-expanded="true"] span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
+    .mobile-menu{display:none;flex-direction:column;gap:4px;padding:16px 24px 24px;border-top:1px solid var(--grey-200)}
+    .mobile-menu.open{display:flex}
+    .mobile-menu a{padding:12px 16px;border-radius:var(--radius-sm);font-weight:500;color:var(--grey-800);transition:background var(--t)}
+    .mobile-menu a:hover{background:var(--grey-100);color:var(--navy)}
+    .mobile-menu .btn{margin-top:8px;justify-content:center}
+
+    /* Hero */
+    .hero-section{background:linear-gradient(135deg,var(--navy-dark) 0%,var(--navy) 65%,var(--navy-light) 100%);padding:80px 0 96px;position:relative;overflow:hidden}
+    .hero-section::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 60% 60% at 80% 50%,rgba(201,162,39,.10) 0%,transparent 70%);pointer-events:none}
+    .hero-grid{display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:center;position:relative;z-index:1}
+    .hero-eyebrow{display:inline-flex;align-items:center;gap:8px;background:rgba(201,162,39,.15);border:1px solid rgba(201,162,39,.3);border-radius:999px;padding:6px 16px;font-size:.78rem;font-weight:700;color:var(--gold-light);letter-spacing:.08em;text-transform:uppercase;margin-bottom:24px}
+    .hero h1{color:var(--white);margin-bottom:24px}
+    .hero h1 span{color:var(--gold-light)}
+    .hero .lead{color:rgba(255,255,255,.85);margin-bottom:36px}
+    .hero-actions{display:flex;flex-wrap:wrap;gap:12px;margin-bottom:48px}
+    .hero-stats{display:flex;gap:32px;flex-wrap:wrap;padding-top:28px;border-top:1px solid rgba(255,255,255,.1)}
+    .hero-stat-num{font-size:1.5rem;font-weight:800;color:var(--gold-light);line-height:1}
+    .hero-stat-label{font-size:.78rem;color:rgba(255,255,255,.6);margin-top:4px;font-weight:500}
+
+    /* Chat card */
+    .hero-card{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.13);border-radius:var(--radius-lg);padding:28px;width:100%;max-width:420px;backdrop-filter:blur(8px)}
+    .hero-card-header{display:flex;align-items:center;gap:12px;margin-bottom:20px;padding-bottom:16px;border-bottom:1px solid rgba(255,255,255,.08)}
+    .hero-card-logo{width:36px;height:36px;border-radius:7px;background:var(--white);display:flex;align-items:center;justify-content:center;padding:3px}
+    .hero-card-logo img{width:30px;height:30px;border-radius:4px}
+    .hero-card-council{font-size:.82rem;font-weight:600;color:var(--white)}
+    .hero-card-status{display:flex;align-items:center;gap:5px;font-size:.7rem;color:rgba(255,255,255,.55);margin-top:2px}
+    .status-dot{width:6px;height:6px;border-radius:50%;background:#4ade80}
+    .chat-q{background:var(--gold);color:var(--black);border-radius:12px 12px 3px 12px;padding:10px 14px;font-size:.83rem;line-height:1.5;margin-left:auto;max-width:85%;margin-bottom:10px;font-weight:500}
+    .chat-a{background:rgba(255,255,255,.08);color:rgba(255,255,255,.92);border:1px solid rgba(255,255,255,.1);border-radius:3px 12px 12px 12px;padding:10px 14px;font-size:.82rem;line-height:1.6;margin-bottom:10px}
+    .chat-a strong{color:var(--gold-light)}
+    .carousel-item{display:none}
+    .carousel-item.active{display:block}
+    .carousel-dots{display:flex;gap:6px;margin-top:16px;padding-top:14px;border-top:1px solid rgba(255,255,255,.08);justify-content:center}
+    .carousel-dot{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.2);border:none;cursor:pointer;transition:background var(--t);padding:0;min-height:0}
+    .carousel-dot.active{background:var(--gold)}
+    .carousel-label{font-size:.7rem;color:rgba(255,255,255,.4);text-align:center;margin-top:8px}
+
+    /* Unique banner */
+    .unique-banner{background:var(--navy-dark);padding:18px 0;border-bottom:1px solid rgba(255,255,255,.06)}
+    .unique-banner-inner{display:flex;align-items:center;justify-content:center;gap:16px;font-size:.88rem;font-weight:600;color:rgba(255,255,255,.9);text-align:center;flex-wrap:wrap}
+    .unique-banner-inner span{color:var(--gold-light)}
+
+    /* Problem */
+    .problem-grid{display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:start}
+    .stat-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:32px}
+    .stat-box{background:var(--grey-50);border:1px solid var(--grey-200);border-radius:var(--radius-md);padding:20px}
+    .stat-box-num{font-size:1.8rem;font-weight:800;color:var(--navy);line-height:1}
+    .stat-box-label{font-size:.8rem;color:var(--grey-600);margin-top:4px;line-height:1.4}
+    .stat-box-source{font-size:.7rem;color:var(--grey-400);margin-top:6px;font-style:italic}
+    .enquiry-bar-row{margin-bottom:10px}
+    .enquiry-bar-label{display:flex;justify-content:space-between;font-size:.82rem;font-weight:500;color:var(--grey-800);margin-bottom:4px}
+    .enquiry-bar-track{height:8px;background:var(--grey-200);border-radius:4px;overflow:hidden}
+    .enquiry-bar-fill{height:100%;border-radius:4px;background:var(--navy)}
+    .enquiry-bar-fill.gold{background:var(--gold)}
+    .enquiry-bar-fill.light{background:var(--grey-400)}
+
+    /* Steps */
+    .steps-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:28px}
+    .step-card{background:var(--white);border-radius:var(--radius-lg);padding:32px 24px;box-shadow:var(--shadow-md);border:1px solid var(--grey-200);transition:transform var(--t),box-shadow var(--t)}
+    .step-card:hover{transform:translateY(-4px);box-shadow:var(--shadow-lg)}
+    .step-num{font-size:3rem;font-weight:800;color:var(--grey-100);line-height:1;margin-bottom:16px}
+    .step-icon-box{width:48px;height:48px;border-radius:var(--radius-md);background:var(--navy);display:flex;align-items:center;justify-content:center;margin-bottom:18px}
+    .step-icon-box svg{width:22px;height:22px;stroke:var(--gold-light);fill:none;stroke-width:1.8}
+    .step-card h3{color:var(--navy);margin-bottom:10px}
+    .step-card p{font-size:.88rem}
+    .feature-list{list-style:none;display:flex;flex-direction:column;gap:10px}
+    .feature-list li{display:flex;gap:10px;font-size:.9rem;color:var(--grey-800);align-items:flex-start}
+    .feature-check{color:var(--gold);font-weight:700;flex-shrink:0;margin-top:1px;font-size:.85rem}
+
+    /* Diff */
+    .diff-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:48px}
+    .diff-card{padding:28px 22px;border-radius:var(--radius-lg);background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.09);transition:background var(--t),border-color var(--t)}
+    .diff-card:hover{background:rgba(255,255,255,.09);border-color:rgba(201,162,39,.35)}
+    .diff-card-icon{width:44px;height:44px;border-radius:var(--radius-sm);background:rgba(201,162,39,.15);display:flex;align-items:center;justify-content:center;margin-bottom:18px}
+    .diff-card-icon svg{width:20px;height:20px;stroke:var(--gold-light);fill:none;stroke-width:1.8}
+    .diff-card h3{color:var(--white);font-size:.98rem;margin-bottom:10px}
+    .diff-card p{font-size:.85rem;color:rgba(255,255,255,.70)}
+
+    /* Navy box feature list override */
+    .on-navy-bg .feature-list li{color:rgba(255,255,255,.88)}
+    .on-navy-bg .feature-check{color:var(--gold-light)}
+
+    /* Demo badge (replaces live badge) */
+    .council-demo-badge{display:inline-flex;align-items:center;gap:5px;font-size:.7rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:3px 9px;border-radius:999px;margin-bottom:14px;width:fit-content;background:#dbeafe;color:#1e40af}
+    .demo-dot{width:5px;height:5px;border-radius:50%;background:#3b82f6}
+
+    /* Nine grid */
+    .nine-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:40px}
+    .nine-card{background:var(--white);border:1px solid var(--grey-200);border-radius:var(--radius-md);padding:20px 18px;border-left:3px solid var(--navy);transition:box-shadow var(--t),border-left-color var(--t)}
+    .nine-card:hover{box-shadow:var(--shadow-md);border-left-color:var(--gold)}
+    .nine-card h4{color:var(--navy);font-size:.9rem;margin-bottom:6px}
+    .nine-card p{font-size:.8rem;line-height:1.6}
+
+    /* Councils */
+    .councils-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:24px;max-width:800px;margin:48px auto 0}
+    .council-card{background:var(--white);border-radius:var(--radius-lg);padding:32px;border:1px solid var(--grey-200);box-shadow:var(--shadow-sm);transition:transform var(--t),box-shadow var(--t),border-color var(--t);display:flex;flex-direction:column;border-left:4px solid var(--gold)}
+    .council-card:hover{transform:translateY(-3px);box-shadow:var(--shadow-md);border-color:var(--navy);border-left-color:var(--gold)}
+    .council-live-badge{display:inline-flex;align-items:center;gap:5px;font-size:.7rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:3px 9px;border-radius:999px;margin-bottom:14px;width:fit-content;background:#d1fae5;color:#065f46}
+    .live-dot{width:5px;height:5px;border-radius:50%;background:#059669}
+    .council-card h3{color:var(--navy);font-size:1.05rem;margin-bottom:4px}
+    .council-region{font-size:.8rem;color:var(--grey-400);font-weight:500;margin-bottom:10px}
+    .council-card p{font-size:.85rem;flex:1;margin-bottom:20px}
+    .council-link{display:inline-flex;align-items:center;gap:6px;font-size:.875rem;font-weight:600;color:var(--navy);transition:gap var(--t)}
+    .council-link:hover{gap:10px}
+    .council-link svg{width:13px;height:13px}
+
+    /* Products */
+    .product-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:48px}
+    .product-card{background:var(--white);border-radius:var(--radius-lg);padding:36px 28px;border:1px solid var(--grey-200);box-shadow:var(--shadow-sm);display:flex;flex-direction:column;transition:box-shadow var(--t),transform var(--t)}
+    .product-card:hover{box-shadow:var(--shadow-lg);transform:translateY(-3px)}
+    .product-card.featured{border-color:var(--navy);border-width:2px}
+    .product-tag{display:inline-block;font-size:.7rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:4px 10px;border-radius:999px;margin-bottom:16px;width:fit-content}
+    .tag-live{background:#d1fae5;color:#065f46}
+    .tag-available{background:#dbeafe;color:#1e40af}
+    .tag-bespoke{background:var(--gold-pale);color:#92400e}
+    .product-card h3{color:var(--navy);font-size:1.15rem;margin-bottom:8px}
+    .product-card .product-desc{font-size:.9rem;margin-bottom:20px;flex:1}
+    .product-features{list-style:none;display:flex;flex-direction:column;gap:8px;margin-bottom:28px}
+    .product-features li{display:flex;gap:8px;font-size:.83rem;color:var(--grey-800);align-items:flex-start}
+
+    /* Analytics */
+    .analytics-grid{display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:start}
+    .compliance-card{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:var(--radius-md);padding:24px;margin-bottom:14px}
+    .compliance-card h4{color:var(--gold-light);font-size:.92rem;margin-bottom:8px}
+    .compliance-card p{font-size:.83rem;color:rgba(255,255,255,.68)}
+
+    /* About */
+    .about-grid{display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:start}
+    .about-content p{margin-bottom:16px}
+    .about-aside{display:flex;flex-direction:column;gap:20px}
+    .about-box{background:var(--grey-50);border-radius:var(--radius-lg);padding:24px;border:1px solid var(--grey-200)}
+    .about-box h4{color:var(--navy);margin-bottom:8px;font-size:.95rem}
+    .about-box p{font-size:.875rem}
+
+    /* FAQ */
+    .faq-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-top:40px}
+    .faq-item{background:var(--white);border-radius:var(--radius-md);border:1px solid var(--grey-200);overflow:hidden}
+    .faq-q{width:100%;text-align:left;background:none;border:none;padding:18px 22px;font-size:.88rem;font-weight:600;color:var(--navy);display:flex;justify-content:space-between;align-items:center;gap:12px;cursor:pointer;transition:background var(--t);min-height:44px}
+    .faq-q:hover{background:var(--grey-50)}
+    .faq-icon{width:18px;height:18px;border-radius:50%;border:1.5px solid var(--grey-400);display:flex;align-items:center;justify-content:center;font-size:.7rem;flex-shrink:0;transition:transform var(--t)}
+    .faq-q[aria-expanded="true"] .faq-icon{transform:rotate(45deg)}
+    .faq-a{display:none;padding:0 22px 18px;font-size:.85rem;color:var(--grey-600);line-height:1.7;border-top:1px solid var(--grey-100)}
+    .faq-a.open{display:block}
+
+    /* Contact */
+    .contact-grid{display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:start}
+    .contact-detail{display:flex;gap:12px;font-size:.9rem;color:var(--grey-800);margin-bottom:12px}
+    .contact-detail svg{width:16px;height:16px;stroke:var(--gold);fill:none;stroke-width:2;flex-shrink:0;margin-top:2px}
+    .form-card{background:var(--white);border-radius:var(--radius-xl);padding:40px;box-shadow:var(--shadow-lg);border:1px solid var(--grey-200)}
+    .form-group{margin-bottom:18px}
+    .form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+    label{display:block;font-size:.83rem;font-weight:600;color:var(--grey-800);margin-bottom:5px}
+    label .req{color:var(--error);margin-left:2px}
+    input[type="text"],input[type="email"],input[type="tel"],select,textarea{width:100%;padding:11px 14px;border-radius:var(--radius-sm);border:1.5px solid var(--grey-200);font-family:inherit;font-size:.92rem;color:var(--grey-800);background:var(--white);transition:border-color var(--t),box-shadow var(--t);min-height:46px}
+    input:focus,select:focus,textarea:focus{outline:none;border-color:var(--navy);box-shadow:0 0 0 3px rgba(26,58,107,.10)}
+    textarea{min-height:110px;resize:vertical}
+    select{cursor:pointer}
+    #formStatus{display:none;margin-top:10px;padding:11px 14px;border-radius:var(--radius-sm);font-size:.85rem;font-weight:500}
+    #formStatus.success{background:#d1fae5;color:#065f46;display:block}
+    #formStatus.error{background:#fee2e2;color:#991b1b;display:block}
+
+    /* Footer */
+    footer{background:var(--black);color:var(--white);padding:60px 0 28px}
+    .footer-grid{display:grid;grid-template-columns:2fr 1fr 1fr;gap:48px;margin-bottom:48px}
+    .footer-logo{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+    .footer-logo img{width:52px;height:52px;border-radius:10px}
+    .footer-logo span{font-size:.98rem;font-weight:700}
+    .footer-brand p{font-size:.83rem;color:rgba(255,255,255,.5);line-height:1.7}
+    .footer-col h4{font-size:.75rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.35);margin-bottom:14px}
+    .footer-col ul{list-style:none;display:flex;flex-direction:column;gap:8px}
+    .footer-col ul a{font-size:.83rem;color:rgba(255,255,255,.6);transition:color var(--t)}
+    .footer-col ul a:hover{color:var(--gold-light)}
+    .footer-contact{font-size:.83rem;color:rgba(255,255,255,.6);line-height:1.8;margin-top:12px}
+    .footer-contact a{color:rgba(255,255,255,.6);transition:color var(--t)}
+    .footer-contact a:hover{color:var(--gold-light)}
+    .footer-bottom{padding-top:28px;border-top:1px solid rgba(255,255,255,.07);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px}
+    .footer-bottom p{font-size:.75rem;color:rgba(255,255,255,.35);margin:0}
+    .footer-disclaimer{font-size:.72rem;color:rgba(255,255,255,.28);margin-top:14px;line-height:1.6;border-top:1px solid rgba(255,255,255,.05);padding-top:14px}
+    .privacy-strip{background:var(--navy-dark);padding:12px 0;border-top:1px solid rgba(255,255,255,.06)}
+    .privacy-strip-inner{display:flex;align-items:center;justify-content:center;gap:28px;flex-wrap:wrap}
+    .privacy-badge{display:flex;align-items:center;gap:6px;font-size:.75rem;color:rgba(255,255,255,.55);font-weight:500}
+    .privacy-badge svg{width:13px;height:13px;stroke:rgba(255,255,255,.4);fill:none;stroke-width:2}
+
+    /* Pages */
+    .page-section{display:none}
+    .page-section.active{display:block}
+
+    /* Responsive */
+    @media(max-width:1024px){
+      .footer-grid{grid-template-columns:1fr 1fr}
+      .steps-grid,.diff-grid,.product-grid{grid-template-columns:1fr 1fr}
+      .nine-grid{grid-template-columns:repeat(2,1fr)}
+    }
+    @media(max-width:768px){
+      .nav-links,.nav-cta{display:none}
+      .nav-toggle{display:flex}
+      .section{padding:64px 0}
+      h1{font-size:1.9rem}h2{font-size:1.55rem}
+      .hero-grid,.problem-grid,.about-grid,.contact-grid,.analytics-grid{grid-template-columns:1fr;gap:36px}
+      .hero-section{padding:80px 0 64px}
+      .hero-visual{display:none}
+      .steps-grid,.diff-grid,.product-grid,.nine-grid,.councils-grid{grid-template-columns:1fr}
+      .faq-grid{grid-template-columns:1fr}
+      .stat-row{grid-template-columns:1fr 1fr}
+      .footer-grid{grid-template-columns:1fr}
+      .form-row{grid-template-columns:1fr}
+      .hero-stats{gap:20px}
+    }
+    @media(max-width:480px){
+      .container{padding:0 16px}
+      .hero-actions{flex-direction:column}
+      .hero-actions .btn{justify-content:center}
+      .form-card{padding:24px 18px}
+    }
+    @keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+    .fade-up{animation:fadeUp .5s ease both}
+    .fade-up-2{animation:fadeUp .5s .1s ease both}
+    @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+
+    /* ── Enquiry Modal ── */
+    .modal-overlay{display:none;position:fixed;inset:0;background:rgba(10,21,48,.65);z-index:2000;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(2px)}
+    .modal-overlay.open{display:flex}
+    .modal-box{background:#fff;border-radius:var(--radius-xl);max-width:520px;width:100%;padding:40px;position:relative;max-height:90vh;overflow-y:auto;box-shadow:0 24px 64px rgba(10,21,48,.25);animation:fadeUp .25s ease both}
+    .modal-close{position:absolute;top:14px;right:16px;background:none;border:none;font-size:1.5rem;cursor:pointer;color:var(--grey-400);line-height:1;padding:4px}
+    .modal-close:hover{color:var(--navy)}
+    .modal-title{font-size:1.2rem;font-weight:700;color:var(--navy);margin-bottom:4px}
+    .modal-subtitle{font-size:.875rem;color:var(--grey-600);margin-bottom:24px;line-height:1.5}
+    .modal-form .form-group{margin-bottom:16px}
+    .modal-form label{display:block;font-size:.83rem;font-weight:600;color:var(--grey-800);margin-bottom:5px}
+    .modal-form label .req{color:var(--error);margin-left:2px}
+    .modal-form input,.modal-form textarea{width:100%;padding:11px 14px;border-radius:var(--radius-sm);border:1.5px solid var(--grey-200);font-family:inherit;font-size:.92rem;color:var(--grey-800);background:var(--white);transition:border-color var(--t);box-sizing:border-box}
+    .modal-form input:focus,.modal-form textarea:focus{outline:none;border-color:var(--navy);box-shadow:0 0 0 3px rgba(26,58,107,.10)}
+    .modal-form textarea{min-height:90px;resize:vertical}
+    .modal-status{margin-top:12px;font-size:.875rem;display:none;padding:10px 14px;border-radius:var(--radius-sm)}
+    .modal-status.success{display:block;background:#f0fdf4;color:#166534;border:1px solid #bbf7d0}
+    .modal-status.error{display:block;background:#fef2f2;color:#991b1b;border:1px solid #fecaca}
+    @media(max-width:540px){.modal-box{padding:28px 20px}}
+
+    /* ── State Toggle ── */
+    .state-toggle{display:flex;gap:0;background:var(--grey-100);border-radius:999px;padding:4px;width:fit-content;margin:32px auto 0}
+    .state-toggle button{padding:10px 24px;border:none;background:transparent;border-radius:999px;font-size:.88rem;font-weight:600;color:var(--grey-600);cursor:pointer;transition:background var(--t),color var(--t)}
+    .state-toggle button.active{background:var(--navy);color:var(--white);box-shadow:var(--shadow-sm)}
+    .state-panel{display:none}
+    .state-panel.active{display:block}
+
+    /* ── Version Badge ── */
+    .council-version{display:inline-block;font-size:.68rem;font-weight:600;color:var(--grey-400);background:var(--grey-100);border:1px solid var(--grey-200);border-radius:999px;padding:2px 9px;margin-left:8px;letter-spacing:.03em;vertical-align:middle}
+
+    /* ── Integration Cards ── */
+    .integration-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:40px}
+    .integration-card{background:var(--white);border-radius:var(--radius-lg);padding:28px;border:1px solid var(--grey-200);box-shadow:var(--shadow-sm);transition:transform var(--t),box-shadow var(--t)}
+    .integration-card:hover{transform:translateY(-3px);box-shadow:var(--shadow-md)}
+    .integration-card.featured{border-color:var(--navy);border-width:2px}
+    .integration-card h4{color:var(--navy);font-size:.95rem;margin-top:16px;margin-bottom:6px}
+    .integration-card p{font-size:.83rem}
+    .integration-wireframe{width:100%;height:140px;border-radius:var(--radius-sm);overflow:hidden}
+    @media(max-width:768px){.integration-grid{grid-template-columns:1fr}}
+    /* ── Disclaimer callout ── */
+    .demo-disclaimer{margin:28px auto 0;max-width:800px;padding:20px 24px;background:var(--gold-pale);border-radius:var(--radius-md);border-left:3px solid var(--gold)}
+    .demo-disclaimer p{font-size:.88rem;color:var(--grey-800);line-height:1.7}
+  </style>
+</head>
+<body>
+
+<a href="#main" class="skip-link">Skip to main content</a>
+
+<nav id="navbar" role="navigation" aria-label="Main navigation">
+  <div class="container">
+    <div class="nav-inner">
+      <a href="#" class="nav-logo" onclick="showPage('home');return false;" aria-label="CouncilGenius home">
+        <img src="logo.png" alt="CouncilGenius" width="38" height="38">
+        <span class="nav-logo-text">CouncilGenius</span>
+      </a>
+      <ul class="nav-links" role="list">
+        <li><a href="#" onclick="showPage('home');return false;" data-page="home">Home</a></li>
+        <li><a href="#" onclick="showPage('how-it-works');return false;" data-page="how-it-works">How It Works</a></li>
+        <li><a href="#" onclick="showPage('councils');return false;" data-page="councils">Our Councils</a></li>
+        <li><a href="#" onclick="showPage('products');return false;" data-page="products">Products</a></li>
+        <li><a href="#" onclick="showPage('about');return false;" data-page="about">About</a></li>
+      </ul>
+      <div class="nav-cta">
+        <a href="#" onclick="showPage('contact');return false;" class="btn btn-primary btn-sm">Request a Demo</a>
+      </div>
+      <button class="nav-toggle" aria-expanded="false" aria-controls="mobileMenu" aria-label="Toggle navigation" onclick="toggleMenu()">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </div>
+  <div id="mobileMenu" class="mobile-menu" role="menu">
+    <a href="#" onclick="showPage('home');closeMobileMenu();return false;">Home</a>
+    <a href="#" onclick="showPage('how-it-works');closeMobileMenu();return false;">How It Works</a>
+    <a href="#" onclick="showPage('councils');closeMobileMenu();return false;">Our Councils</a>
+    <a href="#" onclick="showPage('products');closeMobileMenu();return false;">Products</a>
+    <a href="#" onclick="showPage('about');closeMobileMenu();return false;">About</a>
+    <a href="#" onclick="showPage('contact');closeMobileMenu();return false;" class="btn btn-primary btn-sm">Request a Demo</a>
+  </div>
+</nav>
+
+<main id="main">
+
+<!-- HOME -->
+<div id="page-home" class="page-section active">
+
+  <div class="unique-banner" style="margin-top:72px;">
+    <div class="container">
+      <div class="unique-banner-inner">
+        Australia's only purpose-built AI resident assistant for local government
+        &nbsp;|&nbsp;
+        <span>Live demonstration environments across multiple states — open now</span>
+      </div>
+    </div>
+  </div>
+
+  <section class="hero-section" aria-labelledby="hero-heading">
+    <div class="container">
+      <div class="hero-grid">
+        <div class="hero fade-up">
+          <div class="hero-eyebrow">Live demonstrations across Victoria &amp; New South Wales</div>
+          <h1 id="hero-heading">Your council,<br><span>available 24/7</span></h1>
+          <p class="lead lead--light">The AI assistant that knows your council inside out. Residents get instant, specific answers from your own documents. Staff and reception get time back.</p>
+          <div class="hero-actions">
+            <a href="#" onclick="showPage('contact');return false;" class="btn btn-primary">Request a Demo</a>
+            <a href="#" onclick="showPage('how-it-works');return false;" class="btn btn-outline-white">How It Works</a>
+          </div>
+          <div class="hero-stats">
+            <div class="hero-stat">
+              <div class="hero-stat-num">24/7</div>
+              <div class="hero-stat-label">Always available</div>
+            </div>
+            <div class="hero-stat">
+              <div class="hero-stat-num">58%</div>
+              <div class="hero-stat-label">Of council calls are first-call resolvable</div>
+            </div>
+            <div class="hero-stat">
+              <div class="hero-stat-num">9 min</div>
+              <div class="hero-stat-label">Average call duration — ACXPA 2025</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="hero-visual fade-up-2" aria-hidden="true">
+          <div class="hero-card">
+            <div class="hero-card-header">
+              <div class="hero-card-logo">
+                <img src="logo.png" alt="" width="30" height="30">
+              </div>
+              <div>
+                <div class="hero-card-council" id="carousel-council-name">Central Goldfields Shire</div>
+                <div class="hero-card-status"><span class="status-dot"></span> Online now</div>
+              </div>
+            </div>
+            <div class="carousel-item active" id="carousel-0">
+              <div class="chat-q">What is the building permit fee for a $150,000 shed?</div>
+              <div class="chat-a">For a Class 10A shed valued at $150,000, the permit fee is <strong>$1,270</strong> plus a lodgement fee of $138.43 and inspection fees. If your property is within a Heritage Overlay, planning approval is required before a building permit can be issued.</div>
+            </div>
+            <div class="carousel-item" id="carousel-1">
+              <div class="chat-q">What are the fees for registering a dog?</div>
+              <div class="chat-a">Desexed dog: <strong>$50</strong> (pensioner $25). Not desexed: <strong>$228</strong> (pensioner $114). Your dog must be microchipped and at least 3 months old. Register online at casey.vic.gov.au — tags arrive within <strong>5–10 working days</strong>.</div>
+            </div>
+            <div class="carousel-item" id="carousel-2">
+              <div class="chat-q">When is my bin collection day in Oran Park?</div>
+              <div class="chat-a">Your bin collection day in Oran Park is <strong>Wednesday</strong>. Put your bins out Tuesday evening. Red (garbage), yellow (recycling), and green (garden organics) are all collected <strong>weekly</strong>. Lids must be fully closed.</div>
+            </div>
+            <div class="carousel-item" id="carousel-3">
+              <div class="chat-q">Do I need a permit to remove a tree on the Surf Coast?</div>
+              <div class="chat-a">It depends on the tree and your zone. Properties within a Significant Landscape Overlay or Vegetation Protection Overlay require a planning permit to remove most trees. Some trees under 5 metres may be exempt. <strong>Can you confirm your property address or zone?</strong></div>
+            </div>
+            <div class="carousel-item" id="carousel-4">
+              <div class="chat-q">What are the rules for keeping livestock?</div>
+              <div class="chat-a">In residential areas you need a <strong>permit from Council</strong> — the fee is <strong>$106</strong> (lifetime of the animals). On rural or farming-zoned land, livestock is generally permitted under the planning scheme without a local law permit.</div>
+            </div>
+            <div class="carousel-item" id="carousel-5">
+              <div class="chat-q">How do I apply for a building permit in Kilmore?</div>
+              <div class="chat-a">A building permit is required for new buildings, additions, garages, sheds, decks, retaining walls, pools, and demolition. Contact the <strong>Planning and Building Office on 03 5734 6200</strong> for pre-application advice.</div>
+            </div>
+            <div class="carousel-item" id="carousel-6">
+              <div class="chat-q">How do I apply for a development application?</div>
+              <div class="chat-a">The DA process has <strong>7 stages</strong>. Start by checking if you actually need one — some minor works qualify as exempt or complying development. A free <strong>Duty Officer</strong> consultation is strongly recommended before preparing anything.</div>
+            </div>
+            <div class="carousel-item" id="carousel-7">
+              <div class="chat-q">What are the bin collection days for Torquay?</div>
+              <div class="chat-a">In Torquay, general waste is collected <strong>weekly</strong>, recycling <strong>fortnightly</strong>, and FOGO <strong>weekly</strong>. Your specific collection day depends on your street. I can help you find your ward collector contact or guide you to the Surf Coast waste portal.</div>
+            </div>
+            <div class="carousel-item" id="carousel-8">
+              <div class="chat-q">How do I apply for a development application in The Hills Shire?</div>
+              <div class="chat-a">Not all work requires a full DA — some qualifies as <strong>exempt</strong> or <strong>complying development</strong>. If you do need a DA, submit online via the application form with your plans and fee (from <strong>$385</strong> for works up to $10k). Track progress via the <strong>DA Tracking System</strong>.</div>
+            </div>
+            <div class="carousel-item" id="carousel-9">
+              <div class="chat-q">When is my bin collection day in Shellharbour?</div>
+              <div class="chat-a">Bin days vary by street and suburb. The quickest way is to look up your address on the <strong>Find my bin day</strong> tool at shellharbourwaste.com.au. You can also call the waste services team (REMONDIS) on <strong>1300 121 344</strong>, Monday to Friday 8:30am–5:00pm.</div>
+            </div>
+            <div class="carousel-item" id="carousel-10">
+              <div class="chat-q">What are the bin collection days in Bright?</div>
+              <div class="chat-a">Bright is an <strong>urban area</strong> so FOGO (green lid) is collected <strong>every week</strong>. Recycling (yellow lid) and general waste (red lid) alternate <strong>fortnightly</strong>. Week 1: FOGO + Recycling. Week 2: FOGO + General Waste. Check your rates notice or call <strong>03 5755 0555</strong>.</div>
+            </div>
+            <div class="carousel-item" id="carousel-11">
+              <div class="chat-q">What community services are available in Warragul?</div>
+              <div class="chat-a">Warragul offers the <strong>Civic Centre</strong> at 210 Main Street for rates, planning, and permits. The <strong>Warragul Library</strong> has free membership and WiFi. There's also the <strong>Aquatic Centre</strong>, maternal and child health clinics, and immunisation programs. Phone <strong>(03) 5624 2411</strong>.</div>
+            </div>
+            <div class="carousel-item" id="carousel-12">
+              <div class="chat-q">How do I book foreshore camping on the Mornington Peninsula?</div>
+              <div class="chat-a">You can book foreshore camping at <strong>Rosebud, Rye, or Sorrento</strong> online through the Mornington Peninsula Shire website. Or call <strong>5950 1060</strong> to book over the phone. Sites have specific rules on pets, fees, and facilities.</div>
+            </div>
+            <div class="carousel-dots" role="tablist" aria-label="Example questions">
+              <button class="carousel-dot active" onclick="goToSlide(0)" role="tab" aria-selected="true" aria-label="Example 1"></button>
+              <button class="carousel-dot" onclick="goToSlide(1)" role="tab" aria-selected="false" aria-label="Example 2"></button>
+              <button class="carousel-dot" onclick="goToSlide(2)" role="tab" aria-selected="false" aria-label="Example 3"></button>
+              <button class="carousel-dot" onclick="goToSlide(3)" role="tab" aria-selected="false" aria-label="Example 4"></button>
+              <button class="carousel-dot" onclick="goToSlide(4)" role="tab" aria-selected="false" aria-label="Example 5"></button>
+              <button class="carousel-dot" onclick="goToSlide(5)" role="tab" aria-selected="false" aria-label="Example 6"></button>
+              <button class="carousel-dot" onclick="goToSlide(6)" role="tab" aria-selected="false" aria-label="Example 7"></button>
+              <button class="carousel-dot" onclick="goToSlide(7)" role="tab" aria-selected="false" aria-label="Example 8"></button>
+              <button class="carousel-dot" onclick="goToSlide(8)" role="tab" aria-selected="false" aria-label="Example 9"></button>
+              <button class="carousel-dot" onclick="goToSlide(9)" role="tab" aria-selected="false" aria-label="Example 10"></button>
+              <button class="carousel-dot" onclick="goToSlide(10)" role="tab" aria-selected="false" aria-label="Example 11"></button>
+              <button class="carousel-dot" onclick="goToSlide(11)" role="tab" aria-selected="false" aria-label="Example 12"></button>
+              <button class="carousel-dot" onclick="goToSlide(12)" role="tab" aria-selected="false" aria-label="Example 13"></button>
+            </div>
+            <div class="carousel-label">Answers drawn from official council documents only</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--alt" aria-labelledby="problem-heading">
+    <div class="container">
+      <div class="problem-grid">
+        <div>
+          <span class="section-label">The Problem</span>
+          <h2 id="problem-heading">Councils spend significant resources on routine enquiries</h2>
+          <p style="margin-top:16px;">Australian local councils receive thousands of resident contacts each year. The majority are questions with documented, publicly available answers — yet they consume significant staff time and leave residents waiting.</p>
+          <div class="stat-row">
+            <div class="stat-box">
+              <div class="stat-box-num">58%</div>
+              <div class="stat-box-label">Of council calls resolved at first contact — information a trained AI can answer</div>
+              <div class="stat-box-source">Newcastle City Council customer survey</div>
+            </div>
+            <div class="stat-box">
+              <div class="stat-box-num">9 min</div>
+              <div class="stat-box-label">Average call handle time across Australian councils — at approx. $6.60 per 10 minutes of officer time</div>
+              <div class="stat-box-source">ACXPA Australian contact centre benchmarks, 2025</div>
+            </div>
+          </div>
+          <div style="margin-top:28px;">
+            <p style="font-size:.8rem;font-weight:600;color:var(--navy);margin-bottom:14px;text-transform:uppercase;letter-spacing:.08em;">Enquiry volume by category</p>
+            <div class="enquiry-bar-row"><div class="enquiry-bar-label"><span>Waste &amp; Recycling</span><span style="color:var(--navy);font-weight:700">Highest</span></div><div class="enquiry-bar-track"><div class="enquiry-bar-fill" style="width:92%"></div></div></div>
+            <div class="enquiry-bar-row"><div class="enquiry-bar-label"><span>Roads &amp; Infrastructure</span></div><div class="enquiry-bar-track"><div class="enquiry-bar-fill" style="width:84%"></div></div></div>
+            <div class="enquiry-bar-row"><div class="enquiry-bar-label"><span>Planning &amp; Development</span><span style="font-size:.72rem;color:var(--grey-400)">Highest complexity</span></div><div class="enquiry-bar-track"><div class="enquiry-bar-fill gold" style="width:71%"></div></div></div>
+            <div class="enquiry-bar-row"><div class="enquiry-bar-label"><span>Rates &amp; Property</span></div><div class="enquiry-bar-track"><div class="enquiry-bar-fill gold" style="width:65%"></div></div></div>
+            <div class="enquiry-bar-row"><div class="enquiry-bar-label"><span>Animals &amp; Local Laws</span></div><div class="enquiry-bar-track"><div class="enquiry-bar-fill light" style="width:52%"></div></div></div>
+            <p style="font-size:.72rem;color:var(--grey-400);margin-top:8px;">Based on Victorian Local Government Community Satisfaction Survey data. Relative volume index.</p>
+          </div>
+          <div style="margin-top:20px;padding:18px 20px;background:var(--grey-50);border-radius:var(--radius-md);border-left:3px solid var(--gold);">
+            <p style="font-size:.82rem;color:var(--grey-800);line-height:1.6;">30–50% of council call volume consists of routine information enquiries — questions with a single, documented answer. Redirecting this volume changes what council officers spend their time on.</p>
+          </div>
+        </div>
+        <div>
+          <div class="on-navy-bg" style="background:var(--navy);border-radius:var(--radius-lg);padding:36px;">
+            <h3 style="color:var(--gold-light);margin-bottom:16px;">Not a chatbot. A council expert.</h3>
+            <p style="color:rgba(255,255,255,.82);margin-bottom:20px;">CouncilGenius is trained specifically on your council's own documents. It answers with the exact fee from your current fees and charges schedule, the exact rule from your General Local Law, and the exact contact for your resident's local councillor.</p>
+            <ul class="feature-list">
+              <li><span class="feature-check">+</span> Exact dollar amounts from your fee schedule</li>
+              <li><span class="feature-check">+</span> Exact rules and penalty amounts from local laws</li>
+              <li><span class="feature-check">+</span> Councillor contacts by ward and mobile number</li>
+              <li><span class="feature-check">+</span> Bin days, transfer station hours, FOGO schedules</li>
+              <li><span class="feature-check">+</span> Planning permit process in full</li>
+              <li><span class="feature-check">+</span> Heritage overlay listings by address and HO number</li>
+              <li><span class="feature-check">+</span> Multilingual — answers in the language of the question</li>
+            </ul>
+            <p style="color:rgba(255,255,255,.5);font-size:.78rem;margin-top:20px;padding-top:16px;border-top:1px solid rgba(255,255,255,.1);">Council language, formatting conventions, and email drafting style are pre-built into every CouncilGenius deployment — ensuring all outputs are consistent with how your council communicates.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--navy" aria-labelledby="diff-heading">
+    <div class="container">
+      <div class="text-centre" style="max-width:700px;margin:0 auto;">
+        <span class="section-label section-label--light">What Sets CouncilGenius Apart</span>
+        <h2 id="diff-heading">Australia's only purpose-built AI assistant for local government</h2>
+        <p class="lead lead--light" style="margin:16px auto 0;">No other platform in Australia combines deep council-specific knowledge construction, zero content burden on the council, and full deployment through proprietary methodology.</p>
+      </div>
+      <div class="diff-grid">
+        <div class="diff-card">
+          <div class="diff-card-icon"><svg viewBox="0 0 24 24"><path d="M9 12l2 2 4-4"/><path d="M12 2a10 10 0 110 20 10 10 0 010-20z"/></svg></div>
+          <h3>No content burden on council</h3>
+          <p>Competitors require your staff to write the chatbot content — weeks of work. CouncilGenius constructs the entire knowledge base from your publicly available documents. Your council provides a contact, website access, and an initial engagement. Nothing more.</p>
+        </div>
+        <div class="diff-card">
+          <div class="diff-card-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v4M12 18v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M2 12h4M18 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg></div>
+          <h3>Exact specificity</h3>
+          <p>Not "contact the council for fees." The exact Class 10A building permit fee. The exact penalty for an unleashed dog. The exact heritage overlay number for a given address. Drawn from the actual document.</p>
+        </div>
+        <div class="diff-card">
+          <div class="diff-card-icon"><svg viewBox="0 0 24 24"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg></div>
+          <h3>Proprietary rapid deployment</h3>
+          <p>Our proprietary methodology enables deployment at a pace no competitor can match. Councils are live and serving residents without any IT involvement from the council's side.</p>
+        </div>
+        <div class="diff-card">
+          <div class="diff-card-icon"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>
+          <h3>Speaks every language your community does</h3>
+          <p>CouncilGenius answers in the language of the question. Residents in councils with significant CALD communities receive the same depth and accuracy in Mandarin, Vietnamese, Arabic, Greek, and any other language — without interpreter assistance, without additional cost.</p>
+        </div>
+        <div class="diff-card">
+          <div class="diff-card-icon"><svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg></div>
+          <h3>Data sovereignty option</h3>
+          <p>For councils with data residency requirements, the complete system can run on infrastructure located on council premises — no cloud dependency, no data leaving your building.</p>
+        </div>
+        <div class="diff-card">
+          <div class="diff-card-icon"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg></div>
+          <h3>Useful to staff as well as residents</h3>
+          <p>Reception staff and officers use CouncilGenius as a rapid-reference guide — fielding complex calls in real time, looking up exact fees and procedures, and drafting responses in council style. The same tool that serves residents serves your team.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--dark" aria-label="Call to action">
+    <div class="container text-centre">
+      <h2>Ready to give your community instant answers?</h2>
+      <p class="lead lead--light" style="margin:16px auto 32px;">We will walk you through what CouncilGenius would look like for your council — no commitment required.</p>
+      <div style="display:flex;gap:16px;justify-content:center;flex-wrap:wrap;">
+        <a href="#" onclick="showPage('contact');return false;" class="btn btn-primary">Request a Demo</a>
+        <a href="#" onclick="showPage('councils');return false;" class="btn btn-outline-white">See Live Demonstrations</a>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- HOW IT WORKS -->
+<div id="page-how-it-works" class="page-section">
+  <section style="background:var(--navy);padding:120px 0 80px;" aria-labelledby="hiw-heading">
+    <div class="container text-centre">
+      <span class="section-label section-label--light">How It Works</span>
+      <h1 id="hiw-heading" style="color:var(--white);max-width:680px;margin:0 auto 20px;">From documents to a live assistant — through proprietary methodology</h1>
+      <p class="lead lead--light" style="margin:0 auto;">CouncilGenius constructs, brands, and deploys a fully operational AI assistant using your council's own publicly available documents. No IT project. No content writing from council staff.</p>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="council-provides-heading">
+    <div class="container">
+      <div class="text-centre" style="max-width:640px;margin:0 auto 56px;">
+        <span class="section-label">What the Council Provides</span>
+        <h2 id="council-provides-heading">A commercial engagement — not an IT project</h2>
+        <p class="lead" style="margin:16px auto 0;">CouncilGenius is a managed service. What we need from your council is minimal.</p>
+      </div>
+      <div class="steps-grid">
+        <div class="step-card">
+          <div class="step-num">01</div>
+          <div class="step-icon-box"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
+          <h3>A nominated contact</h3>
+          <p>Your communications manager, customer service lead, or CEO's delegate. This person receives project updates, approves the final product before launch, and is our ongoing point of contact for knowledge base updates when fees or policies change.</p>
+        </div>
+        <div class="step-card">
+          <div class="step-num">02</div>
+          <div class="step-icon-box"><svg viewBox="0 0 24 24"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></svg></div>
+          <h3>Access to the website backend</h3>
+          <p>We require access to the relevant areas of the council's website backend to integrate the CouncilGenius interface correctly. In most cases this involves a brief introduction — no ongoing IT resource requirement from the council's side.</p>
+        </div>
+        <div class="step-card">
+          <div class="step-num">03</div>
+          <div class="step-icon-box"><svg viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg></div>
+          <h3>An engagement fee</h3>
+          <p>CouncilGenius operates on a formal service agreement. An initial engagement fee covers a due diligence period — during which the council evaluates the live assistant, tests its accuracy against real resident queries, and requests amendments before full deployment commences.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--alt" aria-labelledby="nine-cats-heading">
+    <div class="container">
+      <div class="text-centre" style="max-width:640px;margin:0 auto 40px;">
+        <span class="section-label">Comprehensive Coverage</span>
+        <h2 id="nine-cats-heading">22 core service categories, customised for your LGA</h2>
+        <p class="lead" style="margin:16px auto 0;">Every CouncilGenius deployment comprehensively covers all core service areas of Australian local government — with the category structure adapted to each council's specific service profile. Residents receive complete answers, not partial ones.</p>
+      </div>
+      <div class="nine-grid">
+        <div class="nine-card"><h4>Waste &amp; Bin Collection</h4><p>Bin days, colours, collection schedules, FOGO, missed collections, hard waste bookings, recycling rules and contamination.</p></div>
+        <div class="nine-card"><h4>Transfer Stations &amp; Drop-off</h4><p>Locations, opening hours, accepted materials, gate fees, e-waste, chemical disposal, tip vouchers.</p></div>
+        <div class="nine-card"><h4>Rates &amp; Payments</h4><p>Differential rate categories, payment methods, concessions, due dates, penalties, hardship provisions, rate notice queries.</p></div>
+        <div class="nine-card"><h4>Planning &amp; Permits</h4><p>Full planning permit process, heritage overlays by address, VPO and SLO areas, VCAT appeals, zoning queries, fees.</p></div>
+        <div class="nine-card"><h4>Roads &amp; Maintenance</h4><p>Pothole reporting, footpaths, street lighting, drain maintenance, road closures, tree pruning, line marking.</p></div>
+        <div class="nine-card"><h4>Parking &amp; Traffic</h4><p>Parking zones, residential permits, infringement details, time limits, disabled parking, school zones, traffic management.</p></div>
+        <div class="nine-card"><h4>Pets &amp; Animals</h4><p>Registration fees, off-lead areas, barking complaints, species limits, impoundment, animal control contacts.</p></div>
+        <div class="nine-card"><h4>Property Information</h4><p>Property searches, valuations, title information, land use zoning, building permits by class and value.</p></div>
+        <div class="nine-card"><h4>Permits &amp; Licences</h4><p>General permits, business licences, health permits, liquor licences, event permits, signage approvals.</p></div>
+        <div class="nine-card"><h4>Family &amp; Children</h4><p>Kindergarten enrolment, maternal and child health, immunisation schedules, playgroups, family support services.</p></div>
+        <div class="nine-card"><h4>Community Services</h4><p>Libraries, community centres, pools, recreation programs, venue hire, community grants, volunteering.</p></div>
+        <div class="nine-card"><h4>Food &amp; Business</h4><p>Food business registration, health inspections, business support programs, procurement, tenders, economic development.</p></div>
+        <div class="nine-card"><h4>Accessibility &amp; Support</h4><p>Disability access, interpreter services, hardship programs, CALD community support, home care referrals.</p></div>
+        <div class="nine-card"><h4>Contact &amp; Hours</h4><p>All council offices, phone numbers, opening hours, email addresses, service centre locations, after-hours contacts.</p></div>
+        <div class="nine-card"><h4>Planning Schemes &amp; Policies</h4><p>Local planning policy framework, zoning maps, heritage registers, tree protection orders, design guidelines.</p></div>
+        <div class="nine-card"><h4>Environment &amp; Health</h4><p>Stormwater management, contaminated land, environmental planning, water and wastewater, septic systems.</p></div>
+        <div class="nine-card"><h4>Development &amp; Building</h4><p>Building regulations, site permits, construction standards, safety inspections, occupancy certificates, owner-builder.</p></div>
+        <div class="nine-card"><h4>Legal &amp; Appeals</h4><p>Planning appeals, rate objections, complaints process, ombudsman, FOI applications and fees, public interest disclosures.</p></div>
+        <div class="nine-card"><h4>Grants &amp; Funding</h4><p>Community grants, business grants, hardship support, funding rounds, eligibility criteria, application processes.</p></div>
+        <div class="nine-card"><h4>Emergency &amp; Safety</h4><p>Bushfire preparedness, flood response, fire prevention, emergency management plans, climate action, safety alerts.</p></div>
+        <div class="nine-card" style="border-left-color:var(--gold);background:var(--gold-pale);"><h4 style="color:var(--gold);font-size:1.1rem;">+ Council-Specific</h4><p>Saleyards, tourism, arts &amp; culture, swimming pools, council meetings, advocacy priorities, and any service unique to your LGA — the category structure adapts to fit.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="staff-heading">
+    <div class="container">
+      <div class="text-centre" style="max-width:680px;margin:0 auto 48px;">
+        <span class="section-label">For Staff and Reception</span>
+        <h2 id="staff-heading">A rapid-reference tool for your team — not just your community</h2>
+        <p class="lead" style="margin:16px auto 0;">CouncilGenius is equally valuable to council staff fielding calls as it is to residents asking questions. Reception staff have the full depth of the council's knowledge base at their fingertips — in real time, while on the phone.</p>
+      </div>
+      <div class="steps-grid">
+        <div class="step-card">
+          <div class="step-icon-box"><svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.82 19.79 19.79 0 01.01 1.18 2 2 0 012 .01h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 14.92z"/></svg></div>
+          <h3>Handle complex calls instantly</h3>
+          <p>When a resident calls about a heritage overlay or a building permit fee, a reception officer queries CouncilGenius in real time and relays the exact answer — accurately and without escalation to a senior officer.</p>
+        </div>
+        <div class="step-card">
+          <div class="step-icon-box"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></div>
+          <h3>Draft responses in council style</h3>
+          <p>CouncilGenius pre-loads the language conventions, formatting standards, and communication style of your council. Staff can ask it to draft an email response to a resident enquiry — correctly formatted, in council voice, in seconds.</p>
+        </div>
+        <div class="step-card">
+          <div class="step-icon-box"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg></div>
+          <h3>Reduce internal escalations</h3>
+          <p>Routine queries that would normally be escalated to planning officers, rates staff, or the CEO's office are resolved at first contact. Staff spend their time on genuinely complex casework.</p>
+        </div>
+      </div>
+      <div style="margin-top:40px;padding:22px 28px;background:var(--grey-50);border-radius:var(--radius-lg);border:1px solid var(--grey-200);max-width:860px;margin-left:auto;margin-right:auto;">
+        <p style="font-size:.88rem;color:var(--grey-800);line-height:1.75;">Research consistently places 30–50% of council call volume in the deflectable category — enquiries with a documented answer that requires no human discretion. CouncilGenius handles this category. Officers handle the rest. For councils with significant CALD communities, CouncilGenius responds in the language of the question — no interpreter required for standard service information.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--navy" aria-labelledby="analytics-heading">
+    <div class="container">
+      <div class="analytics-grid">
+        <div>
+          <span class="section-label section-label--light">Analytics &amp; Data</span>
+          <h2 id="analytics-heading">Every interaction becomes intelligence</h2>
+          <p style="margin-top:16px;">CouncilGenius includes a built-in analytics and feedback system that gives council a clear picture of what its community actually wants to know — without collecting any personal information.</p>
+          <p style="margin-top:12px;">Every resident query is automatically classified into one of 22+ service categories. The category label and timestamp are written to a secure log — no personal data, no IP addresses, no message content.</p>
+          <p style="margin-top:12px;">Resident feedback — a simple helpfulness rating per response — is captured alongside category data. Council can download the full analytics and feedback logs at any time via secure administrator endpoints.</p>
+          <p style="margin-top:16px;color:rgba(255,255,255,.65);font-size:.85rem;">This enables council to identify peak enquiry types, detect seasonal patterns, prioritise website improvements, and benchmark service demand year-on-year — from a single, privacy-compliant data source.</p>
+        </div>
+        <div>
+          <div class="compliance-card">
+            <h4>Privacy Act 1988 (Cth)</h4>
+            <p>No resident personal information is collected, stored, or transmitted. The analytics system records only anonymised category labels and timestamps — consistent with how councils use standard web analytics platforms.</p>
+          </div>
+          <div class="compliance-card">
+            <h4>Privacy &amp; Data Protection Act 2014 (Vic)</h4>
+            <p>Designed in accordance with OVIC best practice guidance on de-identified analytics. No data collected by CouncilGenius constitutes personal information under either Act.</p>
+          </div>
+          <div class="compliance-card">
+            <h4>Data returned to council</h4>
+            <p>Analytics and feedback data are the council's own asset. Downloaded at any time via secure administrator endpoints. No third-party access. No data sold or shared.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="tech-heading">
+    <div class="container" style="max-width:800px;">
+      <span class="section-label">Technical Foundation</span>
+      <h2 id="tech-heading">What powers it</h2>
+      <p class="lead" style="margin-top:16px;">Plain English — no technical jargon.</p>
+      <div style="display:flex;flex-direction:column;gap:14px;margin-top:36px;">
+        <div style="display:flex;gap:20px;padding:20px;background:var(--grey-50);border-radius:var(--radius-md);border:1px solid var(--grey-200);">
+          <svg viewBox="0 0 24 24" style="width:20px;height:20px;stroke:var(--navy);fill:none;stroke-width:1.8;flex-shrink:0;margin-top:2px;"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+          <div><h4 style="color:var(--navy);margin-bottom:4px;font-size:.92rem;">AI Model</h4><p style="font-size:.85rem;">Anthropic Claude Sonnet 4.6 — one of the world's leading enterprise AI models. The assistant answers only from the council's verified knowledge base. It does not browse the internet or speculate.</p></div>
+        </div>
+        <div style="display:flex;gap:20px;padding:20px;background:var(--grey-50);border-radius:var(--radius-md);border:1px solid var(--grey-200);">
+          <svg viewBox="0 0 24 24" style="width:20px;height:20px;stroke:var(--navy);fill:none;stroke-width:1.8;flex-shrink:0;margin-top:2px;"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>
+          <div><h4 style="color:var(--navy);margin-bottom:4px;font-size:.92rem;">Knowledge Base</h4><p style="font-size:.85rem;">Council documents are synthesised through our proprietary methodology into a structured knowledge base — typically 50,000 to 150,000 characters of precise, verified council information. This is the AI's sole reference source.</p></div>
+        </div>
+        <div style="display:flex;gap:20px;padding:20px;background:var(--grey-50);border-radius:var(--radius-md);border:1px solid var(--grey-200);">
+          <svg viewBox="0 0 24 24" style="width:20px;height:20px;stroke:var(--navy);fill:none;stroke-width:1.8;flex-shrink:0;margin-top:2px;"><path d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z"/></svg>
+          <div><h4 style="color:var(--navy);margin-bottom:4px;font-size:.92rem;">Hosting</h4><p style="font-size:.85rem;">Cloud hosting via Railway (Google Cloud infrastructure), with 99.9% uptime. For councils with data sovereignty requirements, the complete system can operate on council-owned premises with no cloud dependency.</p></div>
+        </div>
+        <div style="display:flex;gap:20px;padding:20px;background:var(--grey-50);border-radius:var(--radius-md);border:1px solid var(--grey-200);">
+          <svg viewBox="0 0 24 24" style="width:20px;height:20px;stroke:var(--navy);fill:none;stroke-width:1.8;flex-shrink:0;margin-top:2px;"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          <div><h4 style="color:var(--navy);margin-bottom:4px;font-size:.92rem;">Privacy</h4><p style="font-size:.85rem;">Completely stateless. No resident conversations are logged. No personal information is collected. Compliant with the Privacy Act 1988 (Cth) and Privacy and Data Protection Act 2014 (Vic). The council's documents remain the council's property.</p></div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- OUR COUNCILS -->
+<div id="page-councils" class="page-section">
+  <section style="background:var(--navy);padding:120px 0 80px;" aria-labelledby="councils-heading">
+    <div class="container text-centre">
+      <span class="section-label section-label--light">Our Councils</span>
+      <h1 id="councils-heading" style="color:var(--white);max-width:680px;margin:0 auto 20px;">Live demonstration environments</h1>
+      <p class="lead lead--light" style="margin:0 auto;">Each demonstration is a fully functional, council-specific AI assistant — built from that council's own publicly available documents. These are working demonstrations of what CouncilGenius does, not yet commissioned council services.</p>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="live-heading">
+    <div class="container">
+      <div class="text-centre" style="max-width:640px;margin:0 auto 16px;">
+        <span class="section-label">Live Demonstrations</span>
+        <h2 id="live-heading">Functional demonstration environments across multiple states</h2>
+        <p class="lead" style="margin:16px auto 0;">Each assistant below is fully operational — built specifically from that council's own publicly available documents. Explore any of them to experience what CouncilGenius would do for your community.</p>
+        <div class="demo-disclaimer">
+          <p>Each demonstration has been built from publicly available council documents. Some environments are more complete than others — this reflects the depth and accessibility of each council's published information, not a limitation of the platform. We invite you to explore several demonstrations to get a full picture of what a commissioned CouncilGenius deployment delivers.</p>
+        </div>
+        <div class="state-toggle" role="tablist" aria-label="Filter by state">
+          <button class="active" onclick="showState('vic')" role="tab" aria-selected="true">Victoria</button>
+          <button onclick="showState('nsw')" role="tab" aria-selected="false">New South Wales</button>
+        </div>
+      </div>
+
+      <div id="state-vic" class="state-panel active">
+      <div class="councils-grid" style="grid-template-columns:repeat(2,1fr);max-width:1000px;">
+        <div class="council-card">
+          <span class="council-demo-badge"><span class="demo-dot"></span> Demo</span>
+          <h3>Central Goldfields Shire Council <span class="council-version">v6.4</span></h3>
+          <div class="council-region">Maryborough, Victoria — Goldfields Region</div>
+          <p>The original CouncilGenius build. Covers the complete rate schedule, building permit fees, General Local Law 2025, all councillors by ward, waste and recycling services, planning and heritage overlays, parking, FOI, and more.</p>
+          <a href="https://web-production-3297.up.railway.app/" target="_blank" rel="noopener" class="council-link">Open demonstration <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 7h12M7 1l6 6-6 6"/></svg></a>
+        </div>
+        <div class="council-card">
+          <span class="council-demo-badge"><span class="demo-dot"></span> Demo</span>
+          <h3>Surf Coast Shire Council <span class="council-version">v6.4</span></h3>
+          <div class="council-region">Torquay, Victoria — Great Ocean Road Region</div>
+          <p>Covers the full planning scheme including heritage and significant landscape overlays across the Great Ocean Road corridor, building permits, waste and FOGO services, rates, local laws, animal management, and all councillors by ward.</p>
+          <a href="https://web-production-78705.up.railway.app/" target="_blank" rel="noopener" class="council-link">Open demonstration <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 7h12M7 1l6 6-6 6"/></svg></a>
+        </div>
+        <div class="council-card">
+          <span class="council-demo-badge"><span class="demo-dot"></span> Demo</span>
+          <h3>Mitchell Shire Council <span class="council-version">v6.4</span></h3>
+          <div class="council-region">Seymour, Victoria — Central Victoria</div>
+          <p>Covers rates and property information, planning permits, local laws, waste services, animal management, community programs, infrastructure requests, and councillor contacts across the Mitchell Shire.</p>
+          <a href="https://councilgenius-production.up.railway.app/" target="_blank" rel="noopener" class="council-link">Open demonstration <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 7h12M7 1l6 6-6 6"/></svg></a>
+        </div>
+        <div class="council-card">
+          <span class="council-demo-badge"><span class="demo-dot"></span> Demo</span>
+          <h3>City of Stonnington <span class="council-version">v5.2</span></h3>
+          <div class="council-region">South Yarra, Victoria — Inner Melbourne</div>
+          <p>Covers planning permits, heritage overlays, parking, local laws, rates, building permits, waste services, community programs, events, and all councillor contacts for Prahran, Malvern, Toorak, and surrounding suburbs.</p>
+          <a href="https://web-production-d265e.up.railway.app/" target="_blank" rel="noopener" class="council-link">Open demonstration <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 7h12M7 1l6 6-6 6"/></svg></a>
+        </div>
+        <div class="council-card">
+          <span class="council-demo-badge"><span class="demo-dot"></span> Demo</span>
+          <h3>Strathbogie Shire Council <span class="council-version">v6.4</span></h3>
+          <div class="council-region">Euroa, Victoria — North East Victoria</div>
+          <p>Covers rates, local laws, land management, saleyards operations, agricultural services, planning, waste, community services, and all relevant rural and regional council services across Strathbogie Shire.</p>
+          <a href="https://web-production-37b9.up.railway.app/" target="_blank" rel="noopener" class="council-link">Open demonstration <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 7h12M7 1l6 6-6 6"/></svg></a>
+        </div>
+        <div class="council-card">
+          <span class="council-demo-badge"><span class="demo-dot"></span> Demo</span>
+          <h3>City of Casey <span class="council-version">v6.4</span></h3>
+          <div class="council-region">Narre Warren, Victoria — South-East Melbourne</div>
+          <p>One of Victoria's largest and most diverse councils. Covers rates, planning, building permits, waste services, local laws, community programs, CALD services, and comprehensive coverage across the rapidly growing south-east corridor.</p>
+          <a href="https://councilgenius-casey-production.up.railway.app/" target="_blank" rel="noopener" class="council-link">Open demonstration <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 7h12M7 1l6 6-6 6"/></svg></a>
+        </div>
+        <div class="council-card">
+          <span class="council-demo-badge"><span class="demo-dot"></span> Demo</span>
+          <h3>City of Melbourne <span class="council-version">v8.0</span></h3>
+          <div class="council-region">Melbourne, Victoria — Central Melbourne</div>
+          <p>Australia's capital city council. Covers rates, planning permits, building and development, parking and traffic, waste services, business registrations, events, community programs, accessibility services, and all council operations across the Melbourne CBD and inner suburbs.</p>
+          <a href="https://councilgenius-melbourne-production.up.railway.app/" target="_blank" rel="noopener" class="council-link">Open demonstration <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 7h12M7 1l6 6-6 6"/></svg></a>
+        </div>
+        <div class="council-card">
+          <span class="council-demo-badge"><span class="demo-dot"></span> Demo</span>
+          <h3>Yarra City Council <span class="council-version">v8.0</span></h3>
+          <div class="council-region">Richmond, Victoria — Inner Melbourne</div>
+          <p>Covers planning permits, heritage overlays, parking permits, waste and recycling, local laws, rates, community services, pets and animals, food and business registrations, and all council services across Fitzroy, Collingwood, Richmond, Abbotsford, and surrounding inner-city suburbs.</p>
+          <a href="https://councilgenius-yarracity-production.up.railway.app/" target="_blank" rel="noopener" class="council-link">Open demonstration <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 7h12M7 1l6 6-6 6"/></svg></a>
+        </div>
+        <div class="council-card">
+          <span class="council-demo-badge"><span class="demo-dot"></span> Demo</span>
+          <h3>City of Melton <span class="council-version">v8.0</span></h3>
+          <div class="council-region">Melton, Victoria — Western Melbourne</div>
+          <p>One of Australia's fastest-growing municipalities. Covers rates, planning and building permits, waste services, pet registration, local laws, parking, community services, family and children's programs, and all council operations across Melton, Caroline Springs, Bacchus Marsh corridor, and surrounding growth areas.</p>
+          <a href="https://councilgenius-melton-production.up.railway.app/" target="_blank" rel="noopener" class="council-link">Open demonstration <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 7h12M7 1l6 6-6 6"/></svg></a>
+        </div>
+        <div class="council-card">
+          <span class="council-demo-badge"><span class="demo-dot"></span> Demo</span>
+          <h3>Cardinia Shire Council <span class="council-version">v8.0</span></h3>
+          <div class="council-region">Pakenham, Victoria — South-East Melbourne</div>
+          <p>Covers waste and hard waste collection, rates, planning permits, building regulations, local laws, pet registration, roads and maintenance, community services, family programs, and all council operations across Pakenham, Officer, Beaconsfield, Emerald, and the broader Cardinia growth corridor.</p>
+          <a href="https://councilgenius-cardinia-production.up.railway.app/" target="_blank" rel="noopener" class="council-link">Open demonstration <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 7h12M7 1l6 6-6 6"/></svg></a>
+        </div>
+        <div class="council-card">
+          <span class="council-demo-badge"><span class="demo-dot"></span> Demo</span>
+          <h3>Mornington Peninsula Shire <span class="council-version">v8.0</span></h3>
+          <div class="council-region">Mornington, Victoria — Mornington Peninsula</div>
+          <p>Covers rates, foreshore camping bookings, planning permits, waste services, pet registration, local laws, parking, community services, environmental health, beaches and reserves, and all council operations across Mornington, Frankston South, Rosebud, Sorrento, Rye, and the broader Peninsula.</p>
+          <a href="https://web-production-a05dd7.up.railway.app/" target="_blank" rel="noopener" class="council-link">Open demonstration <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 7h12M7 1l6 6-6 6"/></svg></a>
+        </div>
+        <div class="council-card">
+          <span class="council-demo-badge"><span class="demo-dot"></span> Demo</span>
+          <h3>Alpine Shire Council <span class="council-version">v8.0</span></h3>
+          <div class="council-region">Bright, Victoria — Alpine Region</div>
+          <p>Covers bin collection schedules with FOGO, recycling and general waste cycles, rates, planning permits, building regulations, local laws, roads and maintenance, tourism services, community programs, and all council operations across Bright, Myrtleford, Mount Beauty, Dinner Plain, and surrounding alpine towns.</p>
+          <a href="https://councilgenius-alpineshire-production.up.railway.app/" target="_blank" rel="noopener" class="council-link">Open demonstration <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 7h12M7 1l6 6-6 6"/></svg></a>
+        </div>
+        <div class="council-card">
+          <span class="council-demo-badge"><span class="demo-dot"></span> Demo</span>
+          <h3>East Gippsland Shire Council <span class="council-version">v8.0</span></h3>
+          <div class="council-region">Bairnsdale, Victoria — Gippsland Region</div>
+          <p>The largest knowledge base in the fleet at 3,683 lines. Covers planning permits, rates, waste services, building regulations, local laws, roads and bridges, environmental management, emergency and bushfire planning, community services, and all council operations across Bairnsdale, Lakes Entrance, Orbost, Mallacoota, and surrounding East Gippsland.</p>
+          <a href="https://councilgenius-eastgippsland-production.up.railway.app/" target="_blank" rel="noopener" class="council-link">Open demonstration <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 7h12M7 1l6 6-6 6"/></svg></a>
+        </div>
+        <div class="council-card">
+          <span class="council-demo-badge"><span class="demo-dot"></span> Demo</span>
+          <h3>Baw Baw Shire Council <span class="council-version">v8.0</span></h3>
+          <div class="council-region">Warragul, Victoria — West Gippsland</div>
+          <p>Covers community services including the Warragul Civic Centre, library, and aquatic centre, maternal and child health, rates, planning permits, building regulations, waste services, local laws, pet registration, roads, and all council operations across Warragul, Drouin, Trafalgar, Neerim South, and surrounding West Gippsland.</p>
+          <a href="https://councilgenius-bawbaw-production.up.railway.app/" target="_blank" rel="noopener" class="council-link">Open demonstration <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 7h12M7 1l6 6-6 6"/></svg></a>
+        </div>
+      </div>
+      </div>
+
+      <div id="state-nsw" class="state-panel">
+      <div class="councils-grid">
+        <div class="council-card">
+          <span class="council-demo-badge"><span class="demo-dot"></span> Demo</span>
+          <h3>Camden Council <span class="council-version">v7.1</span></h3>
+          <div class="council-region">Camden, New South Wales — South-West Sydney</div>
+          <p>The first NSW CouncilGenius build. Covers the full DA process, bin collection zones with live day lookup, rates, development contributions, local laws, community programs, infrastructure, and all council services across the Camden LGA including Oran Park, Narellan, and surrounding growth areas.</p>
+          <a href="https://councilgenius-camden-production.up.railway.app/" target="_blank" rel="noopener" class="council-link">Open demonstration <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 7h12M7 1l6 6-6 6"/></svg></a>
+        </div>
+        <div class="council-card">
+          <span class="council-demo-badge"><span class="demo-dot"></span> Demo</span>
+          <h3>The Hills Shire Council <span class="council-version">v7.1</span></h3>
+          <div class="council-region">The Hills Shire, New South Wales — North-West Sydney</div>
+          <p>Covers development applications with full fee schedules, complying and exempt development pathways, DA tracking, pre-lodgement meetings, building advisory services, waste collection, rates, parking, pets, community facilities, and all council services across the Hills Shire LGA including Castle Hill, Baulkham Hills, Kellyville, and surrounding suburbs.</p>
+          <a href="https://web-production-b0953.up.railway.app/" target="_blank" rel="noopener" class="council-link">Open demonstration <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 7h12M7 1l6 6-6 6"/></svg></a>
+        </div>
+        <div class="council-card">
+          <span class="council-demo-badge"><span class="demo-dot"></span> Demo</span>
+          <h3>Shellharbour City Council <span class="council-version">v7.1</span></h3>
+          <div class="council-region">Shellharbour, New South Wales — Illawarra Region</div>
+          <p>Covers bin collection day lookup by address, waste services, rates, planning and development, pets and animals, parking, community services, environmental health, and all council services across the Shellharbour LGA including Shellharbour Village, Warilla, Albion Park, Barrack Heights, and surrounding areas.</p>
+          <a href="https://web-production-a3371.up.railway.app/" target="_blank" rel="noopener" class="council-link">Open demonstration <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 7h12M7 1l6 6-6 6"/></svg></a>
+        </div>
+      </div>
+      </div>
+      <div style="margin-top:48px;padding:36px;background:var(--gold-pale);border-radius:var(--radius-lg);border:1px dashed rgba(201,162,39,.4);text-align:center;">
+        <h3 style="color:var(--navy);margin-bottom:8px;">Want to see your council demonstrated?</h3>
+        <p style="max-width:520px;margin:0 auto 20px;">CouncilGenius can be built to demonstrate any Australian council's services. Contact us to discuss what a demonstration — or a full commercial deployment — would look like for your community.</p>
+        <a href="#" onclick="openModal('councils');return false;" class="btn btn-primary">Get in touch</a>
+      </div>
+
+      <div style="margin-top:56px;padding:40px;background:var(--grey-50);border-radius:var(--radius-xl);border:1px solid var(--grey-200);">
+        <div style="max-width:720px;margin:0 auto;text-align:center;">
+          <span class="section-label">Flexible Integration</span>
+          <h3 style="color:var(--navy);margin-bottom:8px;">Deploys wherever your residents are</h3>
+          <p>CouncilGenius integrates into your council's existing website in whatever way works best. No structural changes to your site are required.</p>
+        </div>
+        <div class="integration-grid" style="max-width:900px;margin-left:auto;margin-right:auto;">
+          <div class="integration-card featured">
+            <svg class="integration-wireframe" viewBox="0 0 400 140" xmlns="http://www.w3.org/2000/svg">
+              <rect x="0" y="0" width="400" height="140" rx="6" fill="#f8f9fa" stroke="#e9ecef" stroke-width="1"/>
+              <rect x="0" y="0" width="400" height="24" rx="6" fill="#e9ecef"/><rect x="0" y="0" width="400" height="24" rx="0" ry="0" fill="#e9ecef"/>
+              <rect x="8" y="6" width="60" height="12" rx="3" fill="#adb5bd"/>
+              <rect x="280" y="6" width="30" height="12" rx="3" fill="#adb5bd"/><rect x="316" y="6" width="30" height="12" rx="3" fill="#adb5bd"/><rect x="352" y="6" width="40" height="12" rx="3" fill="#C9A227"/>
+              <rect x="16" y="36" width="160" height="10" rx="3" fill="#e9ecef"/>
+              <rect x="16" y="52" width="220" height="6" rx="3" fill="#f1f3f5"/>
+              <rect x="16" y="64" width="180" height="6" rx="3" fill="#f1f3f5"/>
+              <rect x="16" y="80" width="120" height="24" rx="4" fill="#f1f3f5"/>
+              <rect x="290" y="85" width="90" height="40" rx="12" fill="rgba(26,58,107,.12)" stroke="#1A3A6B" stroke-width="2" stroke-dasharray="4,3"/>
+              <rect x="296" y="91" width="78" height="28" rx="10" fill="#1A3A6B"/>
+              <text x="335" y="109" text-anchor="middle" fill="#C9A227" font-size="9" font-weight="700" font-family="Inter,sans-serif">Chat</text>
+              <circle cx="370" cy="119" r="4" fill="#4ade80"/>
+            </svg>
+            <h4>Floating chat widget</h4>
+            <p>Available on every page of the council website. Residents click the chat bubble in the bottom-right corner — the most intuitive, widely recognised format for instant assistance. Recommended as the primary integration.</p>
+          </div>
+          <div class="integration-card">
+            <svg class="integration-wireframe" viewBox="0 0 400 140" xmlns="http://www.w3.org/2000/svg">
+              <rect x="0" y="0" width="400" height="140" rx="6" fill="#f8f9fa" stroke="#e9ecef" stroke-width="1"/>
+              <rect x="0" y="0" width="400" height="24" rx="6" fill="#e9ecef"/><rect x="0" y="0" width="400" height="24" rx="0" ry="0" fill="#e9ecef"/>
+              <rect x="8" y="6" width="60" height="12" rx="3" fill="#adb5bd"/>
+              <rect x="160" y="5" width="180" height="14" rx="4" fill="rgba(26,58,107,.12)" stroke="#1A3A6B" stroke-width="2" stroke-dasharray="4,3"/>
+              <text x="250" y="15" text-anchor="middle" fill="#1A3A6B" font-size="7" font-weight="600" font-family="Inter,sans-serif">Search → CouncilGenius</text>
+              <rect x="16" y="36" width="160" height="10" rx="3" fill="#e9ecef"/>
+              <rect x="16" y="52" width="220" height="6" rx="3" fill="#f1f3f5"/>
+              <rect x="16" y="64" width="180" height="6" rx="3" fill="#f1f3f5"/>
+              <rect x="16" y="80" width="200" height="6" rx="3" fill="#f1f3f5"/>
+              <rect x="16" y="96" width="160" height="6" rx="3" fill="#f1f3f5"/>
+            </svg>
+            <h4>Search replacement</h4>
+            <p>Replaces or enhances the council website's existing search bar. Residents type a question instead of a keyword — and receive a specific, sourced answer rather than a list of PDF links.</p>
+          </div>
+          <div class="integration-card">
+            <svg class="integration-wireframe" viewBox="0 0 400 140" xmlns="http://www.w3.org/2000/svg">
+              <rect x="0" y="0" width="400" height="140" rx="6" fill="#f8f9fa" stroke="#e9ecef" stroke-width="1"/>
+              <rect x="0" y="0" width="400" height="24" rx="6" fill="#e9ecef"/><rect x="0" y="0" width="400" height="24" rx="0" ry="0" fill="#e9ecef"/>
+              <rect x="8" y="6" width="60" height="12" rx="3" fill="#adb5bd"/>
+              <rect x="280" y="6" width="30" height="12" rx="3" fill="#adb5bd"/><rect x="316" y="6" width="30" height="12" rx="3" fill="#adb5bd"/><rect x="352" y="6" width="40" height="12" rx="3" fill="#adb5bd"/>
+              <rect x="20" y="30" width="360" height="100" rx="8" fill="rgba(26,58,107,.08)" stroke="#1A3A6B" stroke-width="2" stroke-dasharray="4,3"/>
+              <rect x="40" y="42" width="140" height="10" rx="3" fill="#1A3A6B" opacity=".3"/>
+              <rect x="40" y="58" width="320" height="6" rx="3" fill="#1A3A6B" opacity=".15"/>
+              <rect x="40" y="70" width="280" height="6" rx="3" fill="#1A3A6B" opacity=".15"/>
+              <rect x="40" y="90" width="200" height="24" rx="4" fill="#1A3A6B" opacity=".15"/>
+              <text x="200" y="118" text-anchor="middle" fill="#1A3A6B" font-size="7" font-weight="600" font-family="Inter,sans-serif">council.vic.gov.au/assistant</text>
+            </svg>
+            <h4>Dedicated page</h4>
+            <p>A full-page assistant living at its own URL within the council website. Ideal for councils that want to give CouncilGenius its own section alongside existing services.</p>
+          </div>
+          <div class="integration-card">
+            <svg class="integration-wireframe" viewBox="0 0 400 140" xmlns="http://www.w3.org/2000/svg">
+              <rect x="0" y="0" width="400" height="140" rx="6" fill="#f8f9fa" stroke="#e9ecef" stroke-width="1"/>
+              <rect x="0" y="0" width="400" height="24" rx="6" fill="#e9ecef"/><rect x="0" y="0" width="400" height="24" rx="0" ry="0" fill="#e9ecef"/>
+              <rect x="8" y="6" width="40" height="12" rx="3" fill="#adb5bd"/>
+              <rect x="56" y="6" width="30" height="12" rx="3" fill="#adb5bd"/>
+              <rect x="14" y="32" width="100" height="8" rx="3" fill="#e9ecef"/>
+              <rect x="14" y="46" width="372" height="38" rx="5" fill="rgba(26,58,107,.08)" stroke="#1A3A6B" stroke-width="2" stroke-dasharray="4,3"/>
+              <text x="30" y="58" fill="#1A3A6B" font-size="7" font-weight="600" font-family="Inter,sans-serif">From: assistant@council.gov.au</text>
+              <text x="30" y="70" fill="#6c757d" font-size="6.5" font-family="Inter,sans-serif">Re: Your rates enquiry — here are the details...</text>
+              <rect x="14" y="92" width="372" height="20" rx="4" fill="#f1f3f5"/>
+              <rect x="14" y="118" width="372" height="14" rx="4" fill="#f1f3f5"/>
+            </svg>
+            <h4>Email assistant</h4>
+            <p>Handles routine enquiries via a dedicated council email address. Residents email a question and receive a sourced, accurate reply — reducing the volume that reaches human inboxes.</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <section class="section section--alt" aria-labelledby="coverage-heading">
+    <div class="container">
+      <div class="text-centre" style="max-width:640px;margin:0 auto 40px;">
+        <span class="section-label">What Every Deployment Covers</span>
+        <h2 id="coverage-heading">22 core service categories. Customised for your LGA.</h2>
+        <p class="lead" style="margin:16px auto 0;">CouncilGenius does not pick and choose service areas. Every deployment comprehensively covers all core service categories of Australian local government — adapted to each council's specific service profile, with the depth and specificity residents and staff actually need.</p>
+      </div>
+      <div class="nine-grid">
+        <div class="nine-card"><h4>Waste &amp; Bin Collection</h4><p>Bin days, colours, FOGO, missed collections, hard waste, recycling rules.</p></div>
+        <div class="nine-card"><h4>Transfer Stations</h4><p>Locations, hours, accepted items, gate fees, e-waste, chemical disposal.</p></div>
+        <div class="nine-card"><h4>Rates &amp; Payments</h4><p>Rate bands, concessions, due dates, penalties, hardship, payment plans.</p></div>
+        <div class="nine-card"><h4>Planning &amp; Permits</h4><p>Planning permits, heritage overlays, vegetation overlays, zoning, VCAT, fees.</p></div>
+        <div class="nine-card"><h4>Roads &amp; Maintenance</h4><p>Potholes, footpaths, street lights, drains, road closures, tree pruning.</p></div>
+        <div class="nine-card"><h4>Parking &amp; Traffic</h4><p>Parking zones, permits, infringements, time limits, disabled parking, school zones.</p></div>
+        <div class="nine-card"><h4>Pets &amp; Animals</h4><p>Registration, off-lead areas, barking complaints, species limits, impoundment.</p></div>
+        <div class="nine-card"><h4>Property Information</h4><p>Searches, valuations, title info, land use zones, building permits.</p></div>
+        <div class="nine-card"><h4>Permits &amp; Licences</h4><p>Business licences, health permits, liquor licences, event permits, signage.</p></div>
+        <div class="nine-card"><h4>Family &amp; Children</h4><p>Kindergarten, MCH, immunisation, playgroups, family support services.</p></div>
+        <div class="nine-card"><h4>Community Services</h4><p>Libraries, community centres, pools, recreation, venue hire, volunteering.</p></div>
+        <div class="nine-card"><h4>Food &amp; Business</h4><p>Food registration, health inspections, business support, procurement, tenders.</p></div>
+        <div class="nine-card"><h4>Accessibility &amp; Support</h4><p>Disability access, interpreter services, hardship, CALD support, home care.</p></div>
+        <div class="nine-card"><h4>Contact &amp; Hours</h4><p>Council offices, phone numbers, opening hours, email, after-hours contacts.</p></div>
+        <div class="nine-card"><h4>Planning Schemes</h4><p>Local planning policy, zoning maps, heritage registers, design guidelines.</p></div>
+        <div class="nine-card"><h4>Environment &amp; Health</h4><p>Stormwater, contaminated land, water and wastewater, septic systems.</p></div>
+        <div class="nine-card"><h4>Development &amp; Building</h4><p>Building regulations, site permits, construction standards, safety inspections.</p></div>
+        <div class="nine-card"><h4>Legal &amp; Appeals</h4><p>Planning appeals, rate objections, complaints, ombudsman, FOI, disclosures.</p></div>
+        <div class="nine-card"><h4>Grants &amp; Funding</h4><p>Community grants, business grants, funding rounds, eligibility, applications.</p></div>
+        <div class="nine-card"><h4>Emergency &amp; Safety</h4><p>Bushfire, flood, fire prevention, emergency management, climate action.</p></div>
+        <div class="nine-card" style="border-left-color:var(--gold);background:var(--gold-pale);"><h4 style="color:var(--gold);font-size:1.1rem;">+ Council-Specific</h4><p>Saleyards, tourism, arts &amp; culture, swimming pools, and any service unique to your LGA.</p></div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- PRODUCTS -->
+<div id="page-products" class="page-section">
+  <section style="background:var(--navy);padding:120px 0 80px;" aria-labelledby="products-heading">
+    <div class="container text-centre">
+      <span class="section-label section-label--light">Products</span>
+      <h1 id="products-heading" style="color:var(--white);max-width:700px;margin:0 auto 20px;">The CouncilGenius platform — three ways to deploy</h1>
+      <p class="lead lead--light" style="margin:0 auto;">The same core technology, adapted for different use cases. Every version adopts the language conventions, brand identity, and communication style of the organisation it serves. Fully customisable deployment is available for any requirement.</p>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="product-cards-heading">
+    <div class="container">
+      <div class="product-grid">
+        <div class="product-card featured">
+          <span class="product-tag tag-live">Live in councils now</span>
+          <h3>CouncilGenius — Public</h3>
+          <p class="product-desc">The flagship product. A branded AI resident assistant, embedded in the council's public website, answering community enquiries around the clock from the council's own documents.</p>
+          <ul class="product-features">
+            <li><span class="feature-check">+</span> Knowledge base built from publicly available council documents</li>
+            <li><span class="feature-check">+</span> Branded in council colours and integrated into council website</li>
+            <li><span class="feature-check">+</span> Text and voice input, text-to-speech output</li>
+            <li><span class="feature-check">+</span> Multilingual — answers in the language of the question</li>
+            <li><span class="feature-check">+</span> Anonymised analytics and resident feedback reporting</li>
+            <li><span class="feature-check">+</span> Privacy Act 1988 (Cth) and PDP Act 2014 (Vic) compliant</li>
+            <li><span class="feature-check">+</span> Pre-loaded with council language and communication conventions</li>
+          </ul>
+          <a href="#" onclick="openModal('public');return false;" class="btn btn-primary btn-sm">Request a Demo</a>
+        </div>
+        <div class="product-card">
+          <span class="product-tag tag-available">Available on enquiry</span>
+          <h3>CouncilGenius — Staff</h3>
+          <p class="product-desc">A private, authenticated version of CouncilGenius trained on internal council documents not publicly available. Deployed on the council intranet, accessible only to staff.</p>
+          <ul class="product-features">
+            <li><span class="feature-check">+</span> Trained on internal policy manuals, procedures, HR frameworks, delegations registers</li>
+            <li><span class="feature-check">+</span> Contractor registers, grant acquittal processes, internal budget working papers</li>
+            <li><span class="feature-check">+</span> Answers questions the public-facing version cannot — using confidential council material</li>
+            <li><span class="feature-check">+</span> Accessible via council intranet behind staff authentication</li>
+            <li><span class="feature-check">+</span> Drafts internally formatted memos, briefing notes, and correspondence</li>
+            <li><span class="feature-check">+</span> Reduces internal escalations — reception resolves complex calls at first contact</li>
+            <li><span class="feature-check">+</span> Can run alongside the public-facing product or independently</li>
+          </ul>
+          <a href="#" onclick="openModal('staff');return false;" class="btn btn-outline-navy btn-sm">Enquire</a>
+        </div>
+        <div class="product-card">
+          <span class="product-tag tag-bespoke">Bespoke deployment</span>
+          <h3>CouncilGenius — Custom</h3>
+          <p class="product-desc">The same platform, deployed for any organisation with a large document base and a need for instant, accurate information retrieval. Government departments, regulatory bodies, large private enterprises.</p>
+          <ul class="product-features">
+            <li><span class="feature-check">+</span> Adopts the language, style guide, and brand identity of any organisation</li>
+            <li><span class="feature-check">+</span> Trained on the organisation's own documents — internal or public-facing</li>
+            <li><span class="feature-check">+</span> Can serve customers, staff, or both — with separate knowledge bases</li>
+            <li><span class="feature-check">+</span> Fully branded interface in the organisation's colour scheme</li>
+            <li><span class="feature-check">+</span> Operates within the organisation's communication style and tone of voice</li>
+            <li><span class="feature-check">+</span> Suitable for any sector with high-volume information enquiries and complex documentation</li>
+          </ul>
+          <a href="#" onclick="openModal('custom');return false;" class="btn btn-outline-navy btn-sm">Discuss a custom build</a>
+        </div>
+      </div>
+
+      <div style="margin-top:56px;padding:40px;background:var(--grey-50);border-radius:var(--radius-xl);border:1px solid var(--grey-200);">
+        <div style="max-width:720px;margin:0 auto;text-align:center;">
+          <h3 style="color:var(--navy);margin-bottom:16px;">Why the platform adapts to any organisation</h3>
+          <p>The CouncilGenius technology is fundamentally document-agnostic. It synthesises any organisation's written information — policies, procedures, product catalogues, regulatory frameworks, fee schedules — into a structured knowledge base, then answers questions from that base with the precision and tone appropriate to the organisation.</p>
+          <p style="margin-top:12px;">The council-specific version is pre-loaded with the language patterns, formatting conventions, and communication standards of Australian local government — making it immediately useful for drafting council-style correspondence, formal responses, and structured procedures. A custom deployment for a different organisation undergoes the same calibration process using that organisation's own style guide and communication materials.</p>
+          <div style="margin-top:24px;">
+            <a href="#" onclick="openModal('custom');return false;" class="btn btn-primary">Get in touch</a>
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-top:48px;border-top:1px solid var(--grey-200);padding-top:56px;">
+        <div style="max-width:860px;margin:0 auto;">
+          <div style="display:flex;align-items:flex-start;gap:40px;flex-wrap:wrap;">
+            <div style="flex:1;min-width:280px;">
+              <span class="product-tag tag-bespoke">For private enterprise</span>
+              <h3 style="color:var(--navy);font-size:1.3rem;margin-bottom:12px;">CouncilGenius for Business</h3>
+              <p style="margin-bottom:16px;">The same platform that powers CouncilGenius for local government is available for private businesses. If your organisation manages a significant volume of documentation and handles high-frequency enquiries — from customers, staff, or both — this is the same capability, built for your context.</p>
+              <p style="margin-bottom:16px;">We build a structured knowledge base from your existing documents — product catalogues, policies, procedures, terms and conditions, training materials, compliance frameworks — and deploy an AI assistant that answers from that base with the tone and language of your organisation. Customer-facing, staff-facing, or both with separate knowledge bases.</p>
+              <p style="color:var(--grey-600);font-size:.88rem;">If you've encountered CouncilGenius through a council and want to explore what a similar capability could do for your business, we'd welcome the conversation.</p>
+              <div style="margin-top:24px;">
+                <a href="#" onclick="openModal('business');return false;" class="btn btn-outline-navy btn-sm">Enquire about a business build</a>
+              </div>
+            </div>
+            <div style="flex:0 0 260px;display:flex;flex-direction:column;gap:14px;">
+              <div style="padding:16px 18px;background:var(--grey-50);border-radius:var(--radius-md);border:1px solid var(--grey-200);">
+                <h4 style="color:var(--navy);font-size:.88rem;margin-bottom:6px;">Customer-facing assistant</h4>
+                <p style="font-size:.82rem;">Trained on your public-facing documentation. Handles product, service, policy, and support enquiries without staff involvement.</p>
+              </div>
+              <div style="padding:16px 18px;background:var(--grey-50);border-radius:var(--radius-md);border:1px solid var(--grey-200);">
+                <h4 style="color:var(--navy);font-size:.88rem;margin-bottom:6px;">Internal knowledge tool</h4>
+                <p style="font-size:.82rem;">Trained on internal documents — procedures, HR frameworks, operational manuals. Gives your team instant access to institutional knowledge.</p>
+              </div>
+              <div style="padding:16px 18px;background:var(--grey-50);border-radius:var(--radius-md);border:1px solid var(--grey-200);">
+                <h4 style="color:var(--navy);font-size:.88rem;margin-bottom:6px;">Fully customisable</h4>
+                <p style="font-size:.82rem;">Branded in your colours, calibrated to your communication style, and updated as your documentation changes.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- ABOUT -->
+<div id="page-about" class="page-section">
+  <section style="background:var(--navy);padding:120px 0 80px;" aria-labelledby="about-heading">
+    <div class="container text-centre">
+      <span class="section-label section-label--light">About</span>
+      <h1 id="about-heading" style="color:var(--white);max-width:680px;margin:0 auto 20px;">Built for Australian communities</h1>
+      <p class="lead lead--light" style="margin:0 auto;">CouncilGenius is a purpose-built AI platform for Australian local government — created to close the gap between what councils provide and what residents can easily access.</p>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="company-heading">
+    <div class="container">
+      <div class="about-grid">
+        <div class="about-content">
+          <span class="section-label">The Product</span>
+          <h2 id="company-heading">CouncilGenius</h2>
+          <p>CouncilGenius was built to solve a straightforward problem: residents cannot get the answers they need without calling the council, and councils spend significant officer time answering the same questions repeatedly.</p>
+          <p>Built specifically for Australian local government, CouncilGenius is not a global platform retrofitted for councils — it was constructed from the ground up to reflect how Australian councils document, structure, and communicate their services. It answers with the exact fee from the current fees and charges schedule, the exact rule from the General Local Law, and the exact contact for a resident's local councillor.</p>
+          <p>CouncilGenius is the only product of its kind built specifically for Australian local government — a distinction that reflects both the depth of specialisation required and the proprietary methodology that makes it possible.</p>
+          <div style="margin-top:32px;display:flex;flex-direction:column;gap:16px;">
+            <div style="display:flex;gap:16px;align-items:flex-start;">
+              <div style="width:40px;height:40px;border-radius:var(--radius-sm);background:var(--navy);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                <svg viewBox="0 0 24 24" style="width:18px;height:18px;stroke:var(--gold-light);fill:none;stroke-width:1.8;"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+              </div>
+              <div><h4 style="color:var(--navy);font-size:.95rem;margin-bottom:4px;">Proven in the field</h4><p style="font-size:.875rem;">CouncilGenius has been built and tested across multiple councils in Victoria and New South Wales — from regional shires to large urban councils. Live demonstration environments are available to explore right now.</p></div>
+            </div>
+            <div style="display:flex;gap:16px;align-items:flex-start;">
+              <div style="width:40px;height:40px;border-radius:var(--radius-sm);background:var(--navy);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                <svg viewBox="0 0 24 24" style="width:18px;height:18px;stroke:var(--gold-light);fill:none;stroke-width:1.8;"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>
+              </div>
+              <div><h4 style="color:var(--navy);font-size:.95rem;margin-bottom:4px;">Australian-built for Australian councils</h4><p style="font-size:.875rem;">Not a global platform retrofitted for local government. Built from the ground up for how Australian councils document, structure, and communicate their services.</p></div>
+            </div>
+            <div style="display:flex;gap:16px;align-items:flex-start;">
+              <div style="width:40px;height:40px;border-radius:var(--radius-sm);background:var(--navy);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                <svg viewBox="0 0 24 24" style="width:18px;height:18px;stroke:var(--gold-light);fill:none;stroke-width:1.8;"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+              </div>
+              <div><h4 style="color:var(--navy);font-size:.95rem;margin-bottom:4px;">Respectful of the sector</h4><p style="font-size:.875rem;">Local government does important work with constrained resources. CouncilGenius is a tool that helps councils serve their communities better — not a replacement for the people who do that work.</p></div>
+            </div>
+          </div>
+        </div>
+        <div class="about-aside">
+          <div class="about-box">
+            <h4>Current status</h4>
+            <p>CouncilGenius has live demonstration environments operational across councils in Victoria and New South Wales — with more states being added. This is a working product actively being introduced to local government — not a concept or prototype.</p>
+          </div>
+          <div class="about-box">
+            <h4>Luca Brew, Director</h4>
+            <p>CouncilGenius, Avenel VIC</p>
+            <div style="margin-top:14px;"><a href="#" onclick="openModal('general');return false;" class="btn btn-outline-navy btn-sm">Get in touch</a></div>
+          </div>
+          <div class="about-box">
+            <h4>Commercial arrangements</h4>
+            <p style="font-size:.875rem;">CouncilGenius is provided under a formal service agreement that includes a due diligence period, during which the council evaluates the live assistant and requests amendments before full deployment commences.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--alt" aria-labelledby="faq-heading">
+    <div class="container">
+      <div class="text-centre" style="max-width:640px;margin:0 auto 40px;">
+        <span class="section-label">FAQ</span>
+        <h2 id="faq-heading">Questions councils ask</h2>
+      </div>
+      <div class="faq-grid">
+        <div class="faq-item"><button class="faq-q" aria-expanded="false" onclick="toggleFaq(this)">Does our IT team need to be involved?<span class="faq-icon">+</span></button><div class="faq-a" role="region">No. CouncilGenius is a standalone managed service. There is nothing for council IT to install, configure, or maintain. We handle all infrastructure, hosting, and ongoing management. Council IT's involvement is limited to a brief introduction at the point of website integration.</div></div>
+        <div class="faq-item"><button class="faq-q" aria-expanded="false" onclick="toggleFaq(this)">What happens when our fees or policies change?<span class="faq-icon">+</span></button><div class="faq-a" role="region">You notify your CouncilGenius contact and we update the knowledge base promptly. Urgent updates — such as emergency information — are handled same-day. Annual fee schedule updates at the start of each financial year are treated as a standard update included in the service.</div></div>
+        <div class="faq-item"><button class="faq-q" aria-expanded="false" onclick="toggleFaq(this)">Does the assistant store resident conversations?<span class="faq-icon">+</span></button><div class="faq-a" role="region">No. The assistant is completely stateless. No resident data is logged, stored, or retained after the conversation ends. No personal information is collected. Compliant with the Privacy Act 1988 (Cth) and the Privacy and Data Protection Act 2014 (Vic).</div></div>
+        <div class="faq-item"><button class="faq-q" aria-expanded="false" onclick="toggleFaq(this)">What if the assistant gives wrong information?<span class="faq-icon">+</span></button><div class="faq-a" role="region">The assistant answers only from the council's own verified documents. It will not speculate or answer questions outside its knowledge base — for anything outside its scope, it directs residents to contact the council directly. A disclaimer is included in the interface for matters of legal or financial significance.</div></div>
+        <div class="faq-item"><button class="faq-q" aria-expanded="false" onclick="toggleFaq(this)">Can residents use it on their phone?<span class="faq-icon">+</span></button><div class="faq-a" role="region">Yes. The interface is fully responsive and works on all devices — phone, tablet, and desktop. Voice input is available for hands-free use, particularly useful for older residents or those with disability. Text-to-speech is also available for any response.</div></div>
+        <div class="faq-item"><button class="faq-q" aria-expanded="false" onclick="toggleFaq(this)">Who owns the data?<span class="faq-icon">+</span></button><div class="faq-a" role="region">The council's own documents and the synthesised knowledge base content remain the property of the council. CouncilGenius retains ownership of the software, code, and methodology used to build and operate the assistant.</div></div>
+        <div class="faq-item"><button class="faq-q" aria-expanded="false" onclick="toggleFaq(this)">What languages does it support?<span class="faq-icon">+</span></button><div class="faq-a" role="region">CouncilGenius supports multiple languages. When a resident asks a question in a language other than English, the assistant provides an answer in that language as well as in English — ensuring accessibility for CALD community members.</div></div>
+        <div class="faq-item"><button class="faq-q" aria-expanded="false" onclick="toggleFaq(this)">Is there a contract? Can we exit?<span class="faq-icon">+</span></button><div class="faq-a" role="region">Yes, CouncilGenius is provided under a formal service agreement with an initial term and provisions for renewal and exit. The agreement includes a due diligence period before the service commences. Contact us for the full terms.</div></div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- CONTACT -->
+<div id="page-contact" class="page-section">
+  <section style="background:var(--navy);padding:120px 0 80px;" aria-labelledby="contact-heading">
+    <div class="container text-centre">
+      <span class="section-label section-label--light">Contact</span>
+      <h1 id="contact-heading" style="color:var(--white);max-width:680px;margin:0 auto 20px;">Request a demo</h1>
+      <p class="lead lead--light" style="margin:0 auto;">Tell us about your council and we will show you exactly what CouncilGenius would look like for your community.</p>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="contact-form-heading">
+    <div class="container">
+      <div class="contact-grid">
+        <div>
+          <span class="section-label">Get in touch</span>
+          <h2 id="contact-form-heading">Let's talk about your council</h2>
+          <p style="margin-top:16px;margin-bottom:24px;">We will respond within one business day. If your council is a good fit, we will arrange a live demonstration — no commitment required.</p>
+          <div class="contact-detail">
+            <svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.82 19.79 19.79 0 01.01 1.18 2 2 0 012 .01h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 14.92z"/></svg>
+            <a href="tel:0457341053">0457 341 053</a>
+          </div>
+          <div class="contact-detail">
+            <svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            Avenel, Victoria, Australia
+          </div>
+          <div class="contact-detail">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            Response within one business day
+          </div>
+          <div style="margin-top:36px;padding:24px;background:var(--gold-pale);border-radius:var(--radius-lg);border:1px solid rgba(201,162,39,.3);">
+            <h4 style="color:var(--navy);margin-bottom:12px;font-size:.95rem;">What happens after you contact us</h4>
+            <div style="display:flex;flex-direction:column;gap:10px;">
+              <div style="display:flex;gap:10px;font-size:.875rem;color:var(--grey-800);"><span style="color:var(--gold);font-weight:700;flex-shrink:0;">1.</span>We respond with an outline of what CouncilGenius would cover for your council — specific to your documents and community.</div>
+              <div style="display:flex;gap:10px;font-size:.875rem;color:var(--grey-800);"><span style="color:var(--gold);font-weight:700;flex-shrink:0;">2.</span>We arrange a live demonstration of an existing deployment or a targeted build for your council.</div>
+              <div style="display:flex;gap:10px;font-size:.875rem;color:var(--grey-800);"><span style="color:var(--gold);font-weight:700;flex-shrink:0;">3.</span>If you would like to proceed, we provide a formal proposal and service agreement. No lock-in.</div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="form-card">
+            <h3 style="color:var(--navy);margin-bottom:24px;font-size:1.1rem;">Enquiry form</h3>
+            <form id="contactForm" novalidate aria-label="Demo request form">
+              <input type="hidden" name="_subject" value="CouncilGenius — Demo Request">
+              <input type="hidden" name="_captcha" value="false">
+              <input type="hidden" name="_template" value="table">
+              <input type="text" name="_honey" style="display:none" tabindex="-1" aria-hidden="true">
+              <div class="form-row">
+                <div class="form-group"><label for="name">Your name <span class="req" aria-label="required">*</span></label><input type="text" id="name" name="name" placeholder="Jane Smith" required autocomplete="name"></div>
+                <div class="form-group"><label for="role">Your role <span class="req" aria-label="required">*</span></label><input type="text" id="role" name="role" placeholder="CEO, Comms Manager..." required></div>
+              </div>
+              <div class="form-group"><label for="email">Email address <span class="req" aria-label="required">*</span></label><input type="email" id="email" name="_replyto" placeholder="jane@council.vic.gov.au" required autocomplete="email"></div>
+              <div class="form-group"><label for="phone">Phone number</label><input type="tel" id="phone" name="phone" placeholder="03 XXXX XXXX" autocomplete="tel"></div>
+              <div class="form-group"><label for="council">Council name <span class="req" aria-label="required">*</span></label><input type="text" id="council" name="council" placeholder="e.g. Ballarat City Council" required></div>
+              <div class="form-group"><label for="state">State / Territory</label><select id="state" name="state"><option value="">Select state...</option><option>Victoria</option><option>New South Wales</option><option>Queensland</option><option>South Australia</option><option>Western Australia</option><option>Tasmania</option><option>Australian Capital Territory</option><option>Northern Territory</option></select></div>
+              <div class="form-group"><label for="message">What would you like to know?</label><textarea id="message" name="message" placeholder="Tell us about your council — current call volumes, digital services, or specific questions about CouncilGenius..."></textarea></div>
+              <button type="submit" class="btn btn-primary" id="submitBtn" style="width:100%;justify-content:center;">Send enquiry</button>
+              <div id="formStatus" role="alert" aria-live="polite"></div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+</main>
+
+<footer>
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <div class="footer-logo">
+          <img src="logo.png" alt="CouncilGenius" width="52" height="52">
+          <span>CouncilGenius</span>
+        </div>
+        <p>Australia's only purpose-built AI resident assistant for local government. Serving councils across Victoria and New South Wales.</p>
+        <div class="footer-contact">
+          <div><a href="tel:0457341053">0457 341 053</a></div>
+          <div><a href="mailto:councilgenius.ai@gmail.com">councilgenius.ai@gmail.com</a></div>
+          <div>Avenel, Victoria, Australia</div>
+        </div>
+      </div>
+      <div class="footer-col">
+        <h4>Navigation</h4>
+        <ul>
+          <li><a href="#" onclick="showPage('home');return false;">Home</a></li>
+          <li><a href="#" onclick="showPage('how-it-works');return false;">How It Works</a></li>
+          <li><a href="#" onclick="showPage('councils');return false;">Our Councils</a></li>
+          <li><a href="#" onclick="showPage('products');return false;">Products</a></li>
+          <li><a href="#" onclick="showPage('about');return false;">About</a></li>
+          <li><a href="#" onclick="showPage('contact');return false;">Contact</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Demonstrations</h4>
+        <ul>
+          <li><a href="https://web-production-3297.up.railway.app/" target="_blank" rel="noopener">Central Goldfields Shire</a></li>
+          <li><a href="https://web-production-78705.up.railway.app/" target="_blank" rel="noopener">Surf Coast Shire</a></li>
+          <li><a href="https://councilgenius-production.up.railway.app/" target="_blank" rel="noopener">Mitchell Shire</a></li>
+          <li><a href="https://web-production-d265e.up.railway.app/" target="_blank" rel="noopener">City of Stonnington</a></li>
+          <li><a href="https://web-production-37b9.up.railway.app/" target="_blank" rel="noopener">Strathbogie Shire</a></li>
+          <li><a href="https://councilgenius-casey-production.up.railway.app/" target="_blank" rel="noopener">City of Casey</a></li>
+          <li><a href="https://councilgenius-melbourne-production.up.railway.app/" target="_blank" rel="noopener">City of Melbourne</a></li>
+          <li><a href="https://councilgenius-yarracity-production.up.railway.app/" target="_blank" rel="noopener">Yarra City Council</a></li>
+          <li><a href="https://councilgenius-melton-production.up.railway.app/" target="_blank" rel="noopener">City of Melton</a></li>
+          <li><a href="https://councilgenius-cardinia-production.up.railway.app/" target="_blank" rel="noopener">Cardinia Shire</a></li>
+          <li><a href="https://web-production-a05dd7.up.railway.app/" target="_blank" rel="noopener">Mornington Peninsula</a></li>
+          <li><a href="https://councilgenius-alpineshire-production.up.railway.app/" target="_blank" rel="noopener">Alpine Shire</a></li>
+          <li><a href="https://councilgenius-eastgippsland-production.up.railway.app/" target="_blank" rel="noopener">East Gippsland Shire</a></li>
+          <li><a href="https://councilgenius-bawbaw-production.up.railway.app/" target="_blank" rel="noopener">Baw Baw Shire</a></li>
+          <li><a href="https://councilgenius-camden-production.up.railway.app/" target="_blank" rel="noopener">Camden Council (NSW)</a></li>
+          <li><a href="https://web-production-b0953.up.railway.app/" target="_blank" rel="noopener">The Hills Shire (NSW)</a></li>
+          <li><a href="https://web-production-a3371.up.railway.app/" target="_blank" rel="noopener">Shellharbour City (NSW)</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>CouncilGenius is a product of TechEntity. All rights reserved.</p>
+      <p>Luca Brew, Director — Avenel VIC</p>
+    </div>
+    <p class="footer-disclaimer">Information provided by CouncilGenius is drawn from publicly available council documents and is intended as a guide only. For matters of legal or financial significance, please confirm directly with the relevant council. CouncilGenius does not store resident conversations. No personal information is collected through the assistant. Compliant with the Privacy Act 1988 (Cth) and Privacy and Data Protection Act 2014 (Vic).</p>
+  </div>
+</footer>
+
+<div class="privacy-strip" aria-label="Compliance indicators">
+  <div class="container">
+    <div class="privacy-strip-inner">
+      <div class="privacy-badge"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>No conversations stored</div>
+      <div class="privacy-badge"><svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>Privacy Act 1988 compliant</div>
+      <div class="privacy-badge"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Available 24/7</div>
+      <div class="privacy-badge"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>Australia's only purpose-built council AI</div>
+    </div>
+  </div>
+</div>
+
+<!-- Enquiry Modal -->
+<div id="modalOverlay" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal()" aria-label="Close">&times;</button>
+    <h2 class="modal-title" id="modalTitle">Get in touch</h2>
+    <p class="modal-subtitle" id="modalSubtitle"></p>
+    <form id="modalForm" class="modal-form">
+      <input type="hidden" name="_captcha" value="false">
+      <input type="hidden" name="_template" value="table">
+      <input type="hidden" id="modalSubject" name="_subject" value="New enquiry">
+      <input type="hidden" id="modalProduct" name="product" value="">
+      <input type="text" name="_honey" style="display:none">
+      <div class="form-group">
+        <label for="modalName">Name <span class="req">*</span></label>
+        <input type="text" id="modalName" name="name" placeholder="Your name" required>
+      </div>
+      <div class="form-group" id="modalOrgGroup">
+        <label for="modalOrg" id="modalOrgLabel">Organisation</label>
+        <input type="text" id="modalOrg" name="organisation" placeholder="Your organisation">
+      </div>
+      <div class="form-group">
+        <label for="modalEmail">Email <span class="req">*</span></label>
+        <input type="email" id="modalEmail" name="email" placeholder="your@email.com" required>
+      </div>
+      <div class="form-group">
+        <label for="modalPhone">Phone <span style="font-weight:400;color:var(--grey-500)">(optional)</span></label>
+        <input type="tel" id="modalPhone" name="phone" placeholder="0400 000 000">
+      </div>
+      <div class="form-group">
+        <label for="modalMsg" id="modalMsgLabel">Message</label>
+        <textarea id="modalMsg" name="message" placeholder="How can we help?" required></textarea>
+      </div>
+      <button type="submit" id="modalSubmitBtn" class="btn btn-primary" style="width:100%;justify-content:center;">Send enquiry</button>
+      <div id="modalStatus" class="modal-status"></div>
+    </form>
+  </div>
+</div>
+
+<script>
+  function showPage(id){document.querySelectorAll('.page-section').forEach(el=>el.classList.remove('active'));const t=document.getElementById('page-'+id);if(t)t.classList.add('active');document.querySelectorAll('.nav-links a').forEach(a=>a.classList.toggle('active',a.dataset.page===id));window.scrollTo({top:0,behavior:'smooth'});}
+  function toggleMenu(){const btn=document.querySelector('.nav-toggle');const menu=document.getElementById('mobileMenu');const open=btn.getAttribute('aria-expanded')==='true';btn.setAttribute('aria-expanded',String(!open));menu.classList.toggle('open');}
+  function closeMobileMenu(){document.querySelector('.nav-toggle').setAttribute('aria-expanded','false');document.getElementById('mobileMenu').classList.remove('open');}
+  window.addEventListener('scroll',()=>{document.getElementById('navbar').classList.toggle('scrolled',window.scrollY>10);},{passive:true});
+  function toggleFaq(btn){const open=btn.getAttribute('aria-expanded')==='true';document.querySelectorAll('.faq-q').forEach(b=>{b.setAttribute('aria-expanded','false');b.nextElementSibling.classList.remove('open');});if(!open){btn.setAttribute('aria-expanded','true');btn.nextElementSibling.classList.add('open');}}
+  const carouselCouncils=['Central Goldfields Shire','City of Casey','Camden Council','Surf Coast Shire','Strathbogie Shire','Mitchell Shire','Camden Council','Surf Coast Shire','The Hills Shire Council','Shellharbour City Council','Alpine Shire Council','Baw Baw Shire Council','Mornington Peninsula Shire'];
+  let currentSlide=0;let carouselTimer;
+  function goToSlide(n){document.getElementById('carousel-'+currentSlide).classList.remove('active');document.querySelectorAll('.carousel-dot')[currentSlide].classList.remove('active');document.querySelectorAll('.carousel-dot')[currentSlide].setAttribute('aria-selected','false');currentSlide=n;document.getElementById('carousel-'+currentSlide).classList.add('active');document.querySelectorAll('.carousel-dot')[currentSlide].classList.add('active');document.querySelectorAll('.carousel-dot')[currentSlide].setAttribute('aria-selected','true');const el=document.getElementById('carousel-council-name');if(el)el.textContent=carouselCouncils[currentSlide];resetTimer();}
+  function nextSlide(){goToSlide((currentSlide+1)%13);}
+  function showState(state){document.querySelectorAll('.state-panel').forEach(p=>p.classList.remove('active'));document.getElementById('state-'+state).classList.add('active');document.querySelectorAll('.state-toggle button').forEach(b=>{b.classList.remove('active');b.setAttribute('aria-selected','false');});event.target.classList.add('active');event.target.setAttribute('aria-selected','true');}
+  function resetTimer(){clearInterval(carouselTimer);carouselTimer=setInterval(nextSlide,4500);}
+  resetTimer();
+  document.getElementById('contactForm').addEventListener('submit',async function(e){e.preventDefault();const form=e.target;const status=document.getElementById('formStatus');const btn=document.getElementById('submitBtn');btn.disabled=true;btn.textContent='Sending...';status.className='';status.style.display='none';const data=new FormData(form);try{const res=await fetch('https://formsubmit.co/ajax/councilgenius.ai@gmail.com',{method:'POST',body:data,headers:{'Accept':'application/json'}});if(res.ok){status.textContent='Enquiry sent — we will be in touch within one business day.';status.className='success';status.style.display='block';form.reset();btn.textContent='Sent';setTimeout(()=>{btn.disabled=false;btn.textContent='Send enquiry';},6000);}else{throw new Error();}}catch{status.textContent='Something went wrong. Please try again or call 0457 341 053.';status.className='error';status.style.display='block';btn.disabled=false;btn.textContent='Send enquiry';}});
+
+  /* ── Enquiry Modal ── */
+  const modalConfig={
+    councils:{title:'Get in touch',subtitle:'Tell us about your council and what you\'re looking for.',orgLabel:'Council name',orgPlaceholder:'e.g. Mitchell Shire Council',msgLabel:'Message',msgPlaceholder:'What would you like to discuss?',product:'CouncilGenius — Council Enquiry'},
+    staff:{title:'Enquire — CouncilGenius Staff',subtitle:'Find out more about the internal staff knowledge tool.',orgLabel:'Council name',orgPlaceholder:'e.g. City of Casey',msgLabel:'Message',msgPlaceholder:'What would you like to know about the staff product?',product:'CouncilGenius Staff'},
+    custom:{title:'Discuss a custom build',subtitle:'Tell us about your organisation and what you\'re trying to solve.',orgLabel:'Organisation name',orgPlaceholder:'Your organisation',msgLabel:'Describe your requirement',msgPlaceholder:'What kind of document base are you working with? What does the assistant need to do?',product:'CouncilGenius Custom Build'},
+    business:{title:'Enquire — CouncilGenius for Business',subtitle:'Find out how CouncilGenius can be built for your business.',orgLabel:'Business name',orgPlaceholder:'Your business name',msgLabel:'Message',msgPlaceholder:'Tell us about your organisation and what you\'re hoping to achieve.',product:'CouncilGenius for Business'},
+    general:{title:'Get in touch',subtitle:'We\'ll respond within one business day.',orgLabel:null,orgPlaceholder:null,msgLabel:'Message',msgPlaceholder:'How can we help?',product:'General Enquiry'},
+    public:{title:'Request a demo — CouncilGenius Public',subtitle:'We\'ll arrange a live demonstration of your council\'s own assistant — no commitment required.',orgLabel:'Council name',orgPlaceholder:'e.g. Surf Coast Shire Council',msgLabel:'Message',msgPlaceholder:'Any specific areas or services you\'d like the demo to focus on?',product:'CouncilGenius Public — Demo Request'}
+  };
+
+  function openModal(type){
+    const cfg=modalConfig[type]||modalConfig.general;
+    document.getElementById('modalForm').reset();
+    document.getElementById('modalStatus').className='modal-status';
+    document.getElementById('modalStatus').textContent='';
+    document.getElementById('modalSubmitBtn').disabled=false;
+    document.getElementById('modalSubmitBtn').textContent='Send enquiry';
+    document.getElementById('modalTitle').textContent=cfg.title;
+    document.getElementById('modalSubtitle').textContent=cfg.subtitle;
+    document.getElementById('modalProduct').value=cfg.product;
+    document.getElementById('modalSubject').value='New enquiry: '+cfg.product;
+    const orgGroup=document.getElementById('modalOrgGroup');
+    const orgInput=document.getElementById('modalOrg');
+    const orgLabel=document.getElementById('modalOrgLabel');
+    if(cfg.orgLabel){orgGroup.style.display='block';orgLabel.textContent=cfg.orgLabel;orgInput.placeholder=cfg.orgPlaceholder;orgInput.name='organisation';}
+    else{orgGroup.style.display='none';orgInput.name='';}
+    document.getElementById('modalMsgLabel').textContent=cfg.msgLabel;
+    document.getElementById('modalMsg').placeholder=cfg.msgPlaceholder;
+    document.getElementById('modalOverlay').classList.add('open');
+    document.body.style.overflow='hidden';
+    document.getElementById('modalName').focus();
+  }
+
+  function closeModal(){
+    document.getElementById('modalOverlay').classList.remove('open');
+    document.body.style.overflow='';
+  }
+
+  document.getElementById('modalOverlay').addEventListener('click',function(e){if(e.target===this)closeModal();});
+  document.addEventListener('keydown',function(e){if(e.key==='Escape')closeModal();});
+
+  document.getElementById('modalForm').addEventListener('submit',async function(e){
+    e.preventDefault();
+    const form=e.target;
+    const status=document.getElementById('modalStatus');
+    const btn=document.getElementById('modalSubmitBtn');
+    btn.disabled=true;btn.textContent='Sending...';
+    status.className='modal-status';status.textContent='';
+    const data=new FormData(form);
+    data.append('_replyto',data.get('email'));
+    try{
+      const res=await fetch('https://formsubmit.co/ajax/councilgenius.ai@gmail.com',{method:'POST',body:data,headers:{'Accept':'application/json'}});
+      if(res.ok){
+        status.className='modal-status success';
+        status.textContent='Enquiry sent — we will be in touch within one business day.';
+        form.reset();btn.textContent='Sent';
+        setTimeout(()=>{btn.disabled=false;btn.textContent='Send enquiry';},5000);
+      }else{throw new Error();}
+    }catch{
+      status.className='modal-status error';
+      status.textContent='Something went wrong. Please try again or call 0457 341 053.';
+      btn.disabled=false;btn.textContent='Send enquiry';
+    }
+  });
+</script>
+
+</body>
+</html>
