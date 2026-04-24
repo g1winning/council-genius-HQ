@@ -42,33 +42,14 @@
   <section id="screen-picker" class="screen" hidden>
     <header class="app-header">
       <div>
-        <div class="brand">Choose council</div>
+        <div class="brand">Browse councils</div>
         <div class="sub">Any Australian council</div>
       </div>
     </header>
     <div class="content">
-      <div class="picker-tabs" role="tablist">
-        <button class="picker-tab active" data-tab="search" role="tab">Search</button>
-        <button class="picker-tab" data-tab="postcode" role="tab">Postcode</button>
-        <button class="picker-tab" data-tab="browse" role="tab">Browse</button>
-      </div>
-
-      <div class="picker-panel" data-panel="search">
-        <input class="picker-input" id="input-search" placeholder="Type council name…" autocomplete="off">
-        <p class="picker-hint" id="hint-search">Start typing to see matching councils.</p>
-        <ul class="council-list" id="list-search"></ul>
-      </div>
-
-      <div class="picker-panel" data-panel="postcode" hidden>
-        <input class="picker-input" id="input-postcode" placeholder="Enter postcode…" inputmode="numeric" pattern="[0-9]*" maxlength="4" autocomplete="off">
-        <p class="picker-hint" id="hint-postcode">Enter a 4-digit postcode.</p>
-        <ul class="council-list" id="list-postcode"></ul>
-      </div>
-
-      <div class="picker-panel" data-panel="browse" hidden>
-        <p class="picker-hint">All councils available on Council Genius.</p>
-        <ul class="council-list" id="list-browse"></ul>
-      </div>
+      <input class="picker-input" id="input-browse" placeholder="Search by council name or postcode" autocomplete="off">
+      <p class="picker-hint" id="hint-browse">Showing all councils.</p>
+      <ul class="council-list" id="list-browse"></ul>
     </div>
   </section>
 

@@ -37,15 +37,9 @@
     },
     btnStart: $('#btn-start'),
     btnSwitch: $('#btn-switch'),
-    tabs: $$('.picker-tab'),
-    panels: $$('.picker-panel'),
-    inputSearch: $('#input-search'),
-    inputPostcode: $('#input-postcode'),
-    listSearch: $('#list-search'),
-    listPostcode: $('#list-postcode'),
+    inputBrowse: $('#input-browse'),
     listBrowse: $('#list-browse'),
-    hintSearch: $('#hint-search'),
-    hintPostcode: $('#hint-postcode'),
+    hintBrowse: $('#hint-browse'),
     chatCouncil: $('#chat-council-name'),
     chatDomain: $('#chat-domain'),
     chatArea: $('#chat-area'),
@@ -71,9 +65,10 @@
       const resp = await fetch(`${API_BASE}/api/councils`, { cache: 'no-cache' });
       const data = await resp.json();
       state.councils = (data.councils || []).filter(c => c.status !== 'paused');
-      renderBrowse();
+      renderList('');
     } catch (e) {
       state.councils = [];
+      el.hintBrowse.textContent = 'Could not load council list. Check your connection and retry.';
       console.error('[councils] load failed', e);
     }
   }
@@ -110,54 +105,63 @@
     return li;
   }
 
-  function renderSearch(query) {
-    const q = (query || '').trim().toLowerCase();
-    el.listSearch.innerHTML = '';
-    if (!q) {
-      el.hintSearch.textContent = 'Start typing to see matching councils.';
-      return;
-    }
-    const matches = state.councils.filter(c =>
-      c.display_name.toLowerCase().includes(q)
-    );
-    if (matches.length === 0) {
-      el.hintSearch.textContent = `No matches for "${query}". Try Postcode or Browse.`;
-      return;
-    }
-    el.hintSearch.textContent = `${matches.length} match${matches.length === 1 ? '' : 'es'}`;
-    matches.forEach(c => el.listSearch.appendChild(councilItem(c)));
-  }
+  // Single-input browse: accepts council name OR postcode in one field.
+  // - Empty input: show all councils (alphabetical).
+  // - All digits: match postcodes (prefix-friendly — "30" shows everything starting 30xx).
+  // - Anything else: case-insensitive name substring.
+  function renderList(query) {
+    const q = (query || '').trim();
+    const list = el.listBrowse;
+    const hint = el.hintBrowse;
+    list.innerHTML = '';
 
-  function renderPostcode(pc) {
-    const p = (pc || '').trim();
-    el.listPostcode.innerHTML = '';
-    if (p.length !== 4 || !/^\d{4}$/.test(p)) {
-      el.hintPostcode.textContent = 'Enter a 4-digit postcode.';
-      return;
-    }
-    const matches = state.councils.filter(c => (c.postcodes || []).includes(p));
-    if (matches.length === 0) {
-      el.hintPostcode.textContent = `No councils for postcode ${p} yet. Try Search or Browse.`;
-      return;
-    }
-    el.hintPostcode.textContent = `Councils covering ${p}`;
-    state.postcode = p;  // remember for logging on council select
-    matches.forEach(c => el.listPostcode.appendChild(councilItem(c)));
-  }
-
-  function renderBrowse() {
-    el.listBrowse.innerHTML = '';
     if (state.councils.length === 0) {
       const li = document.createElement('li');
       li.className = 'empty-state';
       li.textContent = 'No councils available yet.';
-      el.listBrowse.appendChild(li);
+      list.appendChild(li);
+      hint.textContent = '';
       return;
     }
+
     const sorted = state.councils.slice().sort((a, b) =>
       a.display_name.localeCompare(b.display_name)
     );
-    sorted.forEach(c => el.listBrowse.appendChild(councilItem(c)));
+
+    if (!q) {
+      state.postcode = null;
+      hint.textContent = `${sorted.length} council${sorted.length === 1 ? '' : 's'} available.`;
+      sorted.forEach(c => list.appendChild(councilItem(c)));
+      return;
+    }
+
+    let matches;
+    if (/^\d+$/.test(q)) {
+      // Postcode prefix match
+      matches = sorted.filter(c => (c.postcodes || []).some(p => p.startsWith(q)));
+      state.postcode = q.length === 4 ? q : null;  // only log as postcode when full 4 digits
+      if (matches.length === 0) {
+        hint.textContent = `No councils found for postcode ${q}.`;
+        return;
+      }
+      hint.textContent = matches.length === 1
+        ? `1 council covers ${q}`
+        : `${matches.length} councils cover ${q}`;
+    } else {
+      // Name substring
+      const lower = q.toLowerCase();
+      matches = sorted.filter(c => c.display_name.toLowerCase().includes(lower));
+      state.postcode = null;
+      if (matches.length === 0) {
+        hint.textContent = `No councils match "${q}".`;
+        return;
+      }
+      hint.textContent = matches.length === 1
+        ? `1 match`
+        : `${matches.length} matches`;
+    }
+
+    matches.forEach(c => list.appendChild(councilItem(c)));
   }
 
   // ── Council selection → go to chat ──────────────────────────────────
@@ -331,32 +335,23 @@
   }
 
   // ── Event wiring ────────────────────────────────────────────────────
-  el.btnStart.addEventListener('click', () => show('picker'));
+  el.btnStart.addEventListener('click', () => {
+    show('picker');
+    setTimeout(() => el.inputBrowse.focus(), 50);
+  });
 
   el.btnSwitch.addEventListener('click', () => {
     state.postcode = null;
+    el.inputBrowse.value = '';
+    renderList('');
     show('picker');
+    setTimeout(() => el.inputBrowse.focus(), 50);
   });
 
-  el.tabs.forEach(tab => {
-    tab.addEventListener('click', () => {
-      const target = tab.dataset.tab;
-      el.tabs.forEach(t => t.classList.toggle('active', t === tab));
-      el.panels.forEach(p => {
-        if (p.dataset.panel === target) p.removeAttribute('hidden');
-        else p.setAttribute('hidden', '');
-      });
-    });
-  });
-
-  let searchDebounce;
-  el.inputSearch.addEventListener('input', () => {
-    clearTimeout(searchDebounce);
-    searchDebounce = setTimeout(() => renderSearch(el.inputSearch.value), 120);
-  });
-
-  el.inputPostcode.addEventListener('input', () => {
-    renderPostcode(el.inputPostcode.value);
+  let browseDebounce;
+  el.inputBrowse.addEventListener('input', () => {
+    clearTimeout(browseDebounce);
+    browseDebounce = setTimeout(() => renderList(el.inputBrowse.value), 100);
   });
 
   el.chatForm.addEventListener('submit', (e) => {
