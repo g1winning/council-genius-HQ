@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Council Genius</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <meta name="description" content="Ask your council anything. Rates, bins, parking, permits, events — straight answers from any Australian council.">
+
+  <!-- Hosted at councilgenius.com/app — API lives on Railway (cross-origin; server sets Access-Control-Allow-Origin: *). -->
+  <meta name="cg-api-base" content="https://councilgenius-core-production.up.railway.app">
+
+  <!-- PWA -->
+  <link rel="manifest" href="manifest.webmanifest">
+  <meta name="theme-color" content="#1e2a52">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Council Genius">
+  <link rel="apple-touch-icon" href="cg_logo.png">
+  <link rel="icon" href="cg_logo.png" type="image/png">
+
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<main id="app">
+
+  <!-- ══ Screen 1: splash ══ -->
+  <section id="screen-splash" class="screen">
+    <header class="app-header">
+      <div class="brand">Council Genius</div>
+    </header>
+    <div class="content center">
+      <img src="cg_logo.png" alt="Council Genius" class="logo-badge">
+      <h1 class="headline">Ask your council<br>anything.</h1>
+      <p class="tagline">Rates, bins, parking, permits, events — straight answers, any Australian council.</p>
+      <button class="btn-primary" id="btn-start">Pick your council →</button>
+      <p class="install-hint" id="install-hint-ios">Tap Share → Add to Home Screen<br>to use like an app.</p>
+    </div>
+  </section>
+
+  <!-- ══ Screen 2: picker ══ -->
+  <section id="screen-picker" class="screen" hidden>
+    <header class="app-header">
+      <div>
+        <div class="brand">Choose council</div>
+        <div class="sub">Any Australian council</div>
+      </div>
+    </header>
+    <div class="content">
+      <div class="picker-tabs" role="tablist">
+        <button class="picker-tab active" data-tab="search" role="tab">Search</button>
+        <button class="picker-tab" data-tab="postcode" role="tab">Postcode</button>
+        <button class="picker-tab" data-tab="browse" role="tab">Browse</button>
+      </div>
+
+      <div class="picker-panel" data-panel="search">
+        <input class="picker-input" id="input-search" placeholder="Type council name…" autocomplete="off">
+        <p class="picker-hint" id="hint-search">Start typing to see matching councils.</p>
+        <ul class="council-list" id="list-search"></ul>
+      </div>
+
+      <div class="picker-panel" data-panel="postcode" hidden>
+        <input class="picker-input" id="input-postcode" placeholder="Enter postcode…" inputmode="numeric" pattern="[0-9]*" maxlength="4" autocomplete="off">
+        <p class="picker-hint" id="hint-postcode">Enter a 4-digit postcode.</p>
+        <ul class="council-list" id="list-postcode"></ul>
+      </div>
+
+      <div class="picker-panel" data-panel="browse" hidden>
+        <p class="picker-hint">All councils available on Council Genius.</p>
+        <ul class="council-list" id="list-browse"></ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ Screen 3: chat ══ -->
+  <section id="screen-chat" class="screen" hidden>
+    <header class="app-header">
+      <div>
+        <div class="brand" id="chat-council-name">Council</div>
+        <div class="sub">Council Genius</div>
+      </div>
+      <button class="switch-council" id="btn-switch">Switch</button>
+    </header>
+    <div class="council-banner" id="chat-banner">
+      Answers come from <strong id="chat-domain">this council</strong> and council-published docs.
+    </div>
+    <div class="chat-area" id="chat-area" aria-live="polite"></div>
+    <div class="ad-slot" aria-hidden="true">AD SLOT</div>
+    <form class="chat-input-bar" id="chat-form" autocomplete="off">
+      <input class="chat-input" id="chat-input" placeholder="Ask about rates, bins, permits…" required>
+      <button class="send-btn" id="btn-send" type="submit" aria-label="Send">↑</button>
+    </form>
+  </section>
+
+</main>
+
+<footer class="app-footer">
+  <a href="privacy.html">Privacy</a>
+  <span>·</span>
+  <a href="/">← Back to councilgenius.com</a>
+</footer>
+
+<script src="app.js" defer></script>
+</body>
+</html>

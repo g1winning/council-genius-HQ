@@ -1,0 +1,27 @@
+{
+  "name": "Council Genius",
+  "short_name": "Council Genius",
+  "description": "Ask your council anything. Rates, bins, parking, permits, events — straight answers from any Australian council.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#eef1f4",
+  "theme_color": "#1e2a52",
+  "lang": "en-AU",
+  "categories": ["government", "utilities", "productivity"],
+  "icons": [
+    {
+      "src": "cg_logo.png",
+      "sizes": "2048x2048",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "cg_logo.png",
+      "sizes": "2048x2048",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}
