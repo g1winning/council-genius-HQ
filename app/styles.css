@@ -228,6 +228,23 @@ body {
   display: flex;
   align-items: center;
   gap: 8px;
+  font-size: 15px;
+  color: #1a1a1a;
+}
+
+.council-item .name-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+  min-width: 0;
+}
+
+.council-item .badge-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  align-items: center;
 }
 
 .badge-beta {
@@ -238,6 +255,32 @@ body {
   border-radius: 6px;
   font-weight: 700;
   letter-spacing: 0.3px;
+}
+
+.badge-version {
+  background: #eef1f4;
+  color: #4a5568;
+  font-size: 10px;
+  padding: 2px 6px;
+  border-radius: 6px;
+  font-weight: 600;
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  letter-spacing: 0.2px;
+}
+
+.badge-bin {
+  background: #fee2e2;
+  color: #991b1b;
+  font-size: 10px;
+  padding: 2px 6px;
+  border-radius: 6px;
+  font-weight: 600;
+  letter-spacing: 0.2px;
+}
+
+.badge-bin.good {
+  background: #d1fae5;
+  color: #065f46;
 }
 
 .empty-state {
@@ -257,6 +300,35 @@ body {
 }
 
 .council-banner strong { color: #1e2a52; }
+
+.bin-status-banner {
+  background: #fff8e5;
+  border-bottom: 1px solid #f3e0a0;
+  padding: 9px 18px;
+  font-size: 12px;
+  color: #6b5400;
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  line-height: 1.5;
+}
+
+.bin-status-banner[hidden] { display: none; }
+
+.bin-status-banner .bin-status-icon {
+  font-size: 14px;
+  line-height: 1;
+  margin-top: 1px;
+  color: #c4a04f;
+}
+
+.bin-status-banner strong { color: #6b5400; }
+
+.bin-status-banner a {
+  color: #1e2a52;
+  font-weight: 600;
+  text-decoration: underline;
+}
 
 .chat-area {
   flex: 1;

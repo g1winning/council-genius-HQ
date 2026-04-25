@@ -80,21 +80,50 @@
     li.tabIndex = 0;
     li.dataset.slug = c.slug;
 
+    // Left side — name + status badges
+    const nameWrap = document.createElement('div');
+    nameWrap.className = 'name-wrap';
+
     const name = document.createElement('span');
     name.className = 'name';
     name.textContent = c.display_name;
+    nameWrap.appendChild(name);
+
+    const badgeRow = document.createElement('div');
+    badgeRow.className = 'badge-row';
     if (c.status === 'beta') {
       const badge = document.createElement('span');
       badge.className = 'badge-beta';
       badge.textContent = 'BETA';
-      name.appendChild(badge);
+      badgeRow.appendChild(badge);
     }
+    if (c.version) {
+      const v = document.createElement('span');
+      v.className = 'badge-version';
+      v.textContent = 'v' + c.version;
+      badgeRow.appendChild(v);
+    }
+    if (c.bin_data_status === 'no_partnership') {
+      const b = document.createElement('span');
+      b.className = 'badge-bin';
+      b.textContent = 'bins: limited';
+      b.title = 'Council Genius is not yet in a data partnership with this council for live bin pickup schedules.';
+      badgeRow.appendChild(b);
+    } else if (c.bin_data_status === 'open_api' || c.bin_data_status === 'partnership') {
+      const b = document.createElement('span');
+      b.className = 'badge-bin good';
+      b.textContent = 'bins: live';
+      b.title = 'Council Genius has direct access to live bin pickup data for this council.';
+      badgeRow.appendChild(b);
+    }
+    nameWrap.appendChild(badgeRow);
 
+    // Right side — state pill
     const state_ = document.createElement('span');
     state_.className = 'state';
     state_.textContent = c.state;
 
-    li.appendChild(name);
+    li.appendChild(nameWrap);
     li.appendChild(state_);
 
     const choose = () => selectCouncil(c, /* viaPostcode */ state.postcode);
@@ -172,11 +201,34 @@
     el.chatDomain.textContent = inferDomain(c);
     el.chatArea.innerHTML = '';
     el.chatInput.value = '';
+    renderBinStatusBanner(c);
     appendBotMessage(
       `Hi! I can answer questions about ${c.display_name}. What would you like to know?`,
       { skipFeedback: true }
     );
     show('chat');
+  }
+
+  // Show a small banner on the chat screen when CG doesn't have direct access
+  // to live bin pickup data for this council. Frames the limitation as a
+  // council-side data-availability issue, not a Council Genius shortcoming.
+  function renderBinStatusBanner(c) {
+    const banner = document.getElementById('bin-status-banner');
+    const text = document.getElementById('bin-status-text');
+    if (!banner || !text) return;
+    if (c.bin_data_status === 'no_partnership') {
+      const lookup = c.bin_lookup_url
+        ? `<a href="${c.bin_lookup_url}" target="_blank" rel="noopener">official bin lookup</a>`
+        : `the council's website`;
+      text.innerHTML = `<strong>Bin pickup schedules:</strong> Council Genius is not currently in a data partnership with ${escapeText(c.display_name)} for live bin pickup data. For your exact bin day, please use ${lookup}.`;
+      banner.removeAttribute('hidden');
+    } else {
+      banner.setAttribute('hidden', '');
+    }
+  }
+
+  function escapeText(s) {
+    return (s || '').replace(/[&<>]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]));
   }
 
   function inferDomain(c) {
