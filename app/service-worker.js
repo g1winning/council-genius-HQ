@@ -7,7 +7,7 @@
  * Cache version is bumped on every deploy via CACHE_NAME.
  */
 
-const CACHE_NAME = 'cg-shell-v1';
+const CACHE_NAME = 'cg-shell-v2';  // bumped 2026-04-25 — invalidates v1 cache so the merged Browse UI + privacy update reach existing PWA installs
 const SHELL_ASSETS = [
   './',
   './index.html',
